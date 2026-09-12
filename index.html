@@ -84,11 +84,10 @@
         }
     </style>
 
-    <!-- Firebase SDK (v9/v10 Modular via CDN) -->
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDn0Crf3DKbzVvnHcq1kz0nYJbIEuow-bY",
@@ -102,21 +101,15 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         // Global Window Binding
         window.db = db;
-        window.storage = storage;
         window.collection = collection;
         window.addDoc = addDoc;
-        window.getDocs = getDocs;
         window.deleteDoc = deleteDoc;
         window.doc = doc;
         window.onSnapshot = onSnapshot;
         window.setDoc = setDoc;
-        window.ref = ref;
-        window.uploadBytes = uploadBytes;
-        window.getDownloadURL = getDownloadURL;
     </script>
 </head>
 <body class="bg-white text-black font-poppins antialiased min-h-screen flex flex-col justify-between select-none">
@@ -548,7 +541,7 @@
                 renderAdminBannerList();
             });
 
-            // Settings Listener (Marquee, Shipping, Tester)
+            // Settings Listener
             window.onSnapshot(window.doc(window.db, "settings", "general"), (docSnap) => {
                 if(docSnap.exists()) {
                     const data = docSnap.data();
@@ -564,6 +557,16 @@
                 document.getElementById('admin-tester-shopier').value = testerShopierUrl;
                 document.getElementById('admin-shipping-fee').value = shippingFee;
                 document.getElementById('admin-marquee-input').value = marqueeText;
+            });
+        }
+
+        // --- GÖRSELİ HIZLICA BASE64'E ÇEVİREN YARDIMCI FONKSİYON (STORAGE KİLİTLENMESİNİ ENGELLER) ---
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
             });
         }
 
@@ -808,7 +811,6 @@
                 alert("Sepetiniz boş!");
                 return;
             }
-            // İlk ürünün veya Tester paketinin Shopier linkine yönlendirir
             window.open(cart[0].shopierUrl || testerShopierUrl, '_blank');
         }
 
@@ -862,7 +864,7 @@
 
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
 
-        // --- 7. ADMIN ACTIONS (FIREBASE WRITE & DELETE) ---
+        // --- 7. ADMIN ACTIONS (HIZLI VE SIFIR HATA GÖRSEL İŞLEME) ---
         async function handleAddProduct(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-add-p');
@@ -877,16 +879,17 @@
                 const notes = document.getElementById('admin-p-notes').value;
                 const file = document.getElementById('admin-p-file').files[0];
 
-                const storageRef = window.ref(window.storage, 'products/' + Date.now() + '_' + file.name);
-                await window.uploadBytes(storageRef, file);
-                const imageUrl = await window.getDownloadURL(storageRef);
+                let imageUrl = "";
+                if (file) {
+                    imageUrl = await fileToBase64(file);
+                }
 
                 await window.addDoc(window.collection(window.db, "products"), {
                     name, price, category, shopierUrl, notes, image: imageUrl, createdAt: Date.now()
                 });
 
                 e.target.reset();
-                alert("Parfüm başarıyla eklendi ve Firebase'e kaydedildi!");
+                alert("Parfüm başarıyla yüklendi!");
             } catch (err) {
                 alert("Hata oluştu: " + err.message);
             } finally {
@@ -912,9 +915,10 @@
                 const subtitle = document.getElementById('admin-b-subtitle').value;
                 const file = document.getElementById('admin-b-file').files[0];
 
-                const storageRef = window.ref(window.storage, 'banners/' + Date.now() + '_' + file.name);
-                await window.uploadBytes(storageRef, file);
-                const bgUrl = await window.getDownloadURL(storageRef);
+                let bgUrl = "";
+                if (file) {
+                    bgUrl = await fileToBase64(file);
+                }
 
                 await window.addDoc(window.collection(window.db, "banners"), {
                     title, subtitle, bg: bgUrl, createdAt: Date.now()
@@ -948,7 +952,7 @@
 
         async function saveShippingFee() {
             const fee = Number(document.getElementById('admin-shipping-fee').value);
-            await window.setDoc(window.doc(window.doc(window.db, "settings", "general")), {
+            await window.setDoc(window.doc(window.db, "settings", "general"), {
                 shippingFee: fee
             }, { merge: true });
             alert("Kargo ücreti güncellendi!");
