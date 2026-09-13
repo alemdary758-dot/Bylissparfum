@@ -1,1035 +1,1012 @@
-<!-- FontAwesome & Tailwind CSS CDN -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYLISS PARFUM — Lüks Koku Koleksiyonu</title>
+    
+    <!-- FontAwesome & Tailwind CSS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    byliss: {
-                        black: '#000000',
-                        dark: '#111111',
-                        gray: '#777777',
-                        light: '#f7f7f7',
-                        white: '#ffffff',
-                        border: '#e5e5e5'
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        byliss: {
+                            black: '#000000',
+                            dark: '#111111',
+                            gray: '#777777',
+                            light: '#f7f7f7',
+                            white: '#ffffff',
+                            border: '#e5e5e5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'Inter', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace']
                     }
-                },
-                fontFamily: {
-                    sans: ['Poppins', 'Inter', 'sans-serif'],
-                    poppins: ['Poppins', 'sans-serif'],
-                    mono: ['Space Mono', 'monospace']
                 }
             }
         }
-    }
-</script>
-
-<style>
-    body {
-        font-family: 'Poppins', 'Inter', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-    }
-    ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: #000000;
-    }
-    .modal-animate {
-        animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.96); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Marquee Stilleri */
-    .marquee-container {
-        overflow: hidden;
-        white-space: nowrap;
-        width: 100%;
-        background-color: #000000;
-        color: #ffffff;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
-    }
-    .marquee-content {
-        display: inline-block;
-        animation: marquee 28s linear infinite;
-    }
-    .marquee-container:hover .marquee-content {
-        animation-play-state: paused;
-    }
-    @keyframes marquee {
-        0% { transform: translateX(0%); }
-        100% { transform: translateX(-50%); }
-    }
-
-    /* MOBİL CİHAZLAR İÇİN YAN YANA 2'Lİ GRID TASARIMI */
-    @media (max-width: 640px) {
-        #product-grid {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 0.75rem !important;
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .product-card {
-            padding: 0.5rem !important;
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
         }
-        .product-card h3 {
-            font-size: 0.75rem !important;
-            line-height: 1rem !important;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-        .product-card .price-text {
-            font-size: 0.875rem !important;
+        ::-webkit-scrollbar-thumb {
+            background: #000000;
         }
-        .product-card button {
-            padding-top: 0.5rem !important;
-            padding-bottom: 0.5rem !important;
-            font-size: 0.65rem !important;
+        .modal-animate {
+            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-    }
-</style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
-<!-- Firebase SDK (CDN Entegrasyonu) -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        @media (max-width: 640px) {
+            #product-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.75rem !important;
+            }
+            .product-card {
+                padding: 0.5rem !important;
+            }
+            .product-card h3 {
+                font-size: 0.75rem !important;
+                line-height: 1rem !important;
+            }
+            .product-card .price-text {
+                font-size: 0.875rem !important;
+            }
+            .product-card button {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+                font-size: 0.65rem !important;
+            }
+        }
+    </style>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDn0Crf3DKbzVvnHcq1kz0nYJbIEuow-bY",
-        authDomain: "byliss.firebaseapp.com",
-        projectId: "byliss",
-        storageBucket: "byliss.firebasestorage.app",
-        messagingSenderId: "469639731347",
-        appId: "1:469639731347:web:9e022b35da053cd9a65566",
-        measurementId: "G-PLQ70RF2KM"
-    };
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Başlatma
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyDn0Crf3DKbzVvnHcq1kz0nYJbIEuow-bY",
+            authDomain: "byliss.firebaseapp.com",
+            projectId: "byliss",
+            storageBucket: "byliss.firebasestorage.app",
+            messagingSenderId: "469639731347",
+            appId: "1:469639731347:web:9e022b35da053cd9a65566",
+            measurementId: "G-PLQ70RF2KM"
+        };
 
-    // Global Window Tanımlamaları
-    window.db = db;
-    window.storage = storage;
-    window.collection = collection;
-    window.addDoc = addDoc;
-    window.deleteDoc = deleteDoc;
-    window.doc = doc;
-    window.onSnapshot = onSnapshot;
-    window.setDoc = setDoc;
-    window.ref = ref;
-    window.uploadBytes = uploadBytes;
-    window.getDownloadURL = getDownloadURL;
-</script>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.onSnapshot = onSnapshot;
+        window.setDoc = setDoc;
+    </script>
+</head>
+<body class="bg-white text-black font-poppins antialiased min-h-screen flex flex-col justify-between select-none">
 
-<!-- ÜST BİLDİRİM BARI (KAYAN YAZI) -->
-<div class="marquee-container py-2 border-b border-neutral-800 text-[11px] font-poppins tracking-wider uppercase flex items-center h-8 z-40">
-    <div id="marquee-text-container" class="marquee-content flex items-center gap-6">
-        <!-- Dinamik Yüklenir -->
-    </div>
-</div>
-
-<!-- ÜST BAR (NAVBAR) -->
-<header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 py-2.5 flex items-center justify-between relative">
-    <div class="flex items-center space-x-3">
-        <button id="open-sidebar" onclick="openSidebarDrawer()" class="text-black text-xl p-1 focus:outline-none hover:opacity-60 transition-opacity" aria-label="Menü">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+    <!-- ÜST SABİT BİLDİRİM BARI -->
+    <div class="bg-black text-white py-2 border-b border-neutral-800 text-[11px] font-poppins tracking-widest uppercase text-center font-semibold">
+        <span id="top-announcement">BYLISS PARFUM — LÜKS KOKU KOLEKSİYONU | SHOPIER İLE GÜVENLİ ÖDEME</span>
     </div>
 
-    <!-- LOGO -->
-    <a href="#" onclick="switchTab('catalog')" class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center group">
-        <span class="text-xl md:text-2xl font-black tracking-[0.2em] uppercase text-black font-poppins leading-none">BYLISS</span>
-        <span class="text-[9px] md:text-[10px] font-light text-neutral-500 tracking-[0.45em] uppercase leading-tight mt-0.5 pl-1">PARFUM</span>
-    </a>
-
-    <!-- SEPET BUTONU -->
-    <div class="flex items-center space-x-3">
-        <button onclick="openCart()" class="relative text-black text-lg p-1 hover:opacity-60 transition-opacity" aria-label="Sepeti Aç">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span id="cart-badge" class="absolute -top-1.5 -right-2 bg-black text-white text-[9px] font-mono font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
-        </button>
-    </div>
-</header>
-
-<!-- YAN MENÜ DRAWER -->
-<div id="sidebar-drawer" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm transition-opacity" onclick="closeSidebarDrawer()">
-    <div class="w-72 max-w-[80vw] bg-white h-full shadow-2xl p-6 flex flex-col justify-between" onclick="event.stopPropagation()">
-        <div class="space-y-6">
-            <div class="flex justify-between items-center border-b border-neutral-200 pb-4">
-                <span class="font-black tracking-wider uppercase text-lg">BYLISS PARFUM</span>
-                <button onclick="closeSidebarDrawer()" class="text-xl p-1 text-neutral-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <nav class="flex flex-col space-y-4 font-poppins font-medium text-sm">
-                <button onclick="switchTab('catalog'); closeSidebarDrawer();" class="text-left py-2 border-b border-neutral-100 hover:pl-2 transition-all flex items-center gap-3">
-                    <i class="fa-solid fa-spray-can text-neutral-400"></i> Tüm Parfümler
-                </button>
-                <button onclick="switchTab('tester'); closeSidebarDrawer();" class="text-left py-2 border-b border-neutral-100 hover:pl-2 transition-all flex items-center gap-3">
-                    <i class="fa-solid fa-vial text-neutral-400"></i> 3'lü Tester Keşif Seti
-                </button>
-            </nav>
-        </div>
-        <div class="text-[11px] text-neutral-400 font-mono">
-            BYLISS PARFUM v3.1<br>© 2026 Tüm Hakları Saklıdır.
-        </div>
-    </div>
-</div>
-
-<!-- ANA İÇERİK ALANI -->
-<main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
-
-    <!-- NAVİGASYON SEKMELERİ -->
-    <div class="flex items-center justify-center space-x-2 md:space-x-4 border-b border-neutral-200 pb-4 mb-6 font-poppins text-xs font-semibold uppercase tracking-wider overflow-x-auto">
-        <button id="tab-catalog-btn" onclick="switchTab('catalog')" class="px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm">
-            <i class="fa-solid fa-spray-can mr-1.5"></i> Koleksiyon
-        </button>
-        <button id="tab-tester-btn" onclick="switchTab('tester')" class="px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap">
-            <i class="fa-solid fa-vials mr-1.5"></i> 3'lü Tester Seti
-        </button>
-    </div>
-
-    <!-- 1. KATALOG VE BANNER BÖLÜMÜ -->
-    <div id="section-catalog" class="space-y-8">
-        
-        <!-- HERO SLIDER / BANNER -->
-        <div class="relative w-full h-56 sm:h-80 md:h-96 bg-neutral-900 rounded-2xl overflow-hidden shadow-lg group">
-            <div id="hero-slider-container" class="w-full h-full relative">
-                <!-- Slider dinamik yüklenir -->
-            </div>
-            <button onclick="prevHeroSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-20">
-                <i class="fa-solid fa-chevron-left"></i>
+    <!-- ÜST BAR (NAVBAR) -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 py-3 flex items-center justify-between relative">
+        <div class="flex items-center space-x-3">
+            <button id="open-sidebar" onclick="openSidebarDrawer()" class="text-black text-xl p-1 focus:outline-none hover:opacity-60 transition-opacity" aria-label="Menü">
+                <i class="fa-solid fa-bars"></i>
             </button>
-            <button onclick="nextHeroSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-20">
-                <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <!-- LOGO -->
+        <a href="#" onclick="switchTab('catalog')" class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center group">
+            <span class="text-xl md:text-2xl font-black tracking-[0.2em] uppercase text-black font-poppins leading-none">BYLISS</span>
+            <span class="text-[9px] md:text-[10px] font-light text-neutral-500 tracking-[0.45em] uppercase leading-tight mt-0.5 pl-1">PARFUM</span>
+        </a>
+
+        <!-- SEPET BUTONU -->
+        <div class="flex items-center space-x-3">
+            <button onclick="openCart()" class="relative text-black text-lg p-1 hover:opacity-60 transition-opacity" aria-label="Sepeti Aç">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-badge" class="absolute -top-1.5 -right-2 bg-black text-white text-[9px] font-mono font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
             </button>
-            <div id="hero-indicators" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2 z-20"></div>
         </div>
+    </header>
 
-        <!-- KATEGORİ VE ARAMA FİLTRESİ -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-            <div class="flex items-center space-x-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 font-poppins text-xs font-medium">
-                <button onclick="filterCategory('all')" class="cat-filter-btn px-3 py-1.5 bg-black text-white rounded-md whitespace-nowrap">Tümü</button>
-                <button onclick="filterCategory('fresh')" class="cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap">Ferah & Çiçeksi</button>
-                <button onclick="filterCategory('odunsu')" class="cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap">Odunsu & Oryantal</button>
-                <button onclick="filterCategory('niş')" class="cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap">Niş Koleksiyon</button>
-            </div>
-
-            <div class="relative w-full sm:w-64">
-                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Parfüm adı veya nota ara..." class="w-full pl-9 pr-4 py-2 border border-neutral-300 text-xs focus:outline-none focus:border-black rounded-lg">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-xs"></i>
-            </div>
-        </div>
-
-        <!-- ÜRÜN KARTLARI IZGARASI -->
-        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            <!-- Dinamik Parfüm Kartları -->
-        </div>
-    </div>
-
-    <!-- 2. TESTER SETİ BÖLÜMÜ -->
-    <div id="section-tester" class="hidden max-w-3xl mx-auto space-y-6">
-        <div class="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl text-center space-y-3">
-            <span class="text-xs font-mono tracking-widest text-neutral-400 uppercase">KEŞİF PAKETİ</span>
-            <h2 class="text-2xl sm:text-3xl font-black uppercase font-poppins">3'lü Tester Keşif Seti (3 x 5ml)</h2>
-            <p class="text-xs text-neutral-300 max-w-lg mx-auto">
-                Büyük boy şişe almadan önce kokuları teninizde deneyimleyin! İstediğiniz 3 farklı BYLISS parfümünü seçin, özel numune kutunuzu hazırlayalım.
-            </p>
-        </div>
-
-        <div class="bg-white border border-neutral-200 p-6 rounded-2xl space-y-6 shadow-sm font-poppins text-xs">
-            <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
-                <span class="font-bold uppercase text-sm">Seçilen Parfümler (<span id="tester-count">0</span>/3)</span>
-                <button onclick="clearTesterSelection()" class="text-neutral-500 hover:text-black text-xs underline">Temizle</button>
-            </div>
-
-            <div id="selected-testers-list" class="flex flex-wrap gap-2 min-h-[40px] items-center p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-                <span class="text-neutral-400 italic">Henüz parfüm seçilmedi. Aşağıdaki listeden 3 adet seçiniz.</span>
-            </div>
-
-            <div class="space-y-2">
-                <label class="block font-bold uppercase text-neutral-700">Koleksiyondan 3 Parfüm Seçin:</label>
-                <div id="tester-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
-                    <!-- Dinamik Yüklenir -->
+    <!-- YAN MENÜ DRAWER -->
+    <div id="sidebar-drawer" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm transition-opacity" onclick="closeSidebarDrawer()">
+        <div class="w-72 max-w-[80vw] bg-white h-full shadow-2xl p-6 flex flex-col justify-between" onclick="event.stopPropagation()">
+            <div class="space-y-6">
+                <div class="flex justify-between items-center border-b border-neutral-200 pb-4">
+                    <span class="font-black tracking-wider uppercase text-lg">BYLISS PARFUM</span>
+                    <button onclick="closeSidebarDrawer()" class="text-xl p-1 text-neutral-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-            </div>
-
-            <div class="pt-4 border-t border-neutral-200 flex items-center justify-between">
-                <div>
-                    <div class="text-[10px] font-mono uppercase text-neutral-400">TESTER SETİ PAKET FİYATI:</div>
-                    <div id="tester-price-display" class="text-xl font-bold font-mono text-black">450 ₺</div>
-                </div>
-                <button id="add-tester-btn" onclick="triggerTesterWarning()" disabled class="px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed">
-                    <i class="fa-solid fa-box-open"></i> TESTER SETİNİ SEPETE EKLE
-                </button>
-            </div>
-        </div>
-    </div>
-
-</main>
-
-<!-- TESTER UYARI MODALI -->
-<div id="tester-warning-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white border border-black w-full max-w-md rounded-2xl modal-animate p-6 font-poppins text-center space-y-4 shadow-2xl">
-        <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
-        <h3 class="font-black text-lg uppercase tracking-wider text-black">DİKKAT / UYARI</h3>
-        <p class="text-xs text-neutral-700 font-medium leading-relaxed bg-neutral-50 p-4 rounded-xl border border-neutral-200">
-            Ödeme ekranına yönlendirilince seçtiğiniz koku isimlerini <strong>SATICI NOTU</strong> kısmında belirtiniz. Aksi taktirde siparişiniz iptal olunacaktır!
-        </p>
-        <div class="flex flex-col gap-2 pt-2">
-            <button onclick="confirmTesterAddToCart()" class="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-neutral-800 transition-colors shadow-md">
-                ANLADIM, SEPETE EKLE
-            </button>
-            <button onclick="closeTesterWarning()" class="w-full py-2.5 text-neutral-500 font-semibold text-xs uppercase hover:text-black">
-                Vazgeç
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- SAĞ SEPET DRAWER -->
-<div id="cart-drawer" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm transition-opacity" onclick="closeCart()">
-    <aside class="w-full max-w-md bg-white h-full ml-auto shadow-2xl flex flex-col justify-between" onclick="event.stopPropagation()">
-        <div class="p-4 border-b border-neutral-200 flex items-center justify-between bg-neutral-50 font-poppins">
-            <div class="flex items-center gap-2 font-bold text-sm uppercase">
-                <i class="fa-solid fa-bag-shopping text-black"></i>
-                <span>ALIŞVERİŞ SEPETİM</span>
-                <span id="cart-drawer-count" class="text-xs bg-black text-white px-2 py-0.5 rounded-full font-mono">0</span>
-            </div>
-            <button onclick="closeCart()" class="text-xl p-1 text-neutral-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div id="cart-items-container" class="flex-grow overflow-y-auto p-4 space-y-4 font-poppins">
-            <!-- Dinamik Sepet Ürünleri -->
-        </div>
-
-        <div class="p-4 border-t border-neutral-200 bg-neutral-50 space-y-3 font-poppins">
-            <div class="flex justify-between text-xs text-neutral-600">
-                <span>Ara Toplam:</span>
-                <span id="cart-subtotal">0 ₺</span>
-            </div>
-            <div class="flex justify-between text-xs text-neutral-600">
-                <span>Kargo Ücreti:</span>
-                <span id="cart-shipping">75 ₺</span>
-            </div>
-            <div class="flex justify-between text-sm font-bold text-black border-t border-neutral-200 pt-2">
-                <span>GENEL TOPLAM:</span>
-                <span id="cart-total">0 ₺</span>
-            </div>
-
-            <button onclick="redirectToShopierDirectly()" class="w-full py-3.5 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 shadow-sm">
-                <i class="fa-solid fa-lock text-xs"></i> SHOPIER İLE GÜVENLİ ÖDEME
-            </button>
-
-            <button onclick="checkoutWhatsApp()" class="w-full py-2.5 border border-emerald-600 text-emerald-700 font-bold text-[11px] uppercase tracking-wider rounded-lg hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2">
-                <i class="fa-brands fa-whatsapp text-sm"></i> WHATSAPP İLE İLETİŞİME GEÇ
-            </button>
-        </div>
-    </aside>
-</div>
-
-<!-- ALT BİLGİ (FOOTER) -->
-<footer class="bg-black text-white py-12 px-4 border-t border-neutral-800 text-center font-poppins mt-16">
-    <div class="max-w-7xl mx-auto flex flex-col items-center justify-center space-y-6">
-        
-        <div class="flex flex-col items-center justify-center">
-            <svg width="220" height="70" viewBox="0 0 500 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-48 sm:w-56 h-auto">
-                <path d="M 100 55 Q 250 30 400 55 Q 250 48 100 55 Z" fill="#FFFFFF" />
-                <text x="250" y="125" text-anchor="middle" fill="#FFFFFF" font-family="'Poppins', sans-serif" font-weight="900" font-size="82" letter-spacing="4">BYLISS</text>
-                <text x="250" y="168" text-anchor="middle" fill="#FFFFFF" font-family="'Inter', sans-serif" font-weight="300" font-size="34" letter-spacing="12">PARFUM</text>
-            </svg>
-        </div>
-
-        <p class="text-xs text-neutral-400 max-w-md leading-relaxed">
-            Yüksek esans oranına sahip, kalıcı ve eşsiz koku notalarıyla hazırlanan niş parfüm koleksiyonu.
-        </p>
-
-        <div class="flex space-x-6 text-lg text-neutral-400 pt-2">
-            <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
-        </div>
-
-        <div class="pt-6 border-t border-neutral-900 w-full text-[11px] text-neutral-500">
-            <span onclick="openAdminAuthModal()" class="cursor-pointer hover:text-white transition-colors select-none" title="Yönetici Paneli Girişi">
-                © 2026 BYLISS PARFUM
-            </span>
-            — Tüm Hakları Saklıdır.
-        </div>
-    </div>
-</footer>
-
-<!-- YÖNETİCİ ŞİFRE GİRİŞ MODALI -->
-<div id="admin-auth-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white border border-black w-full max-w-sm rounded-2xl modal-animate p-6 font-poppins text-center space-y-4 shadow-2xl">
-        <div class="w-12 h-12 bg-neutral-100 text-black rounded-full flex items-center justify-center mx-auto text-xl">
-            <i class="fa-solid fa-lock"></i>
-        </div>
-        <h3 class="font-black text-base uppercase tracking-wider text-black">YÖNETİCİ GİRİŞİ</h3>
-        <p class="text-xs text-neutral-500">Yönetim paneline erişmek için şifrenizi giriniz.</p>
-        
-        <div class="space-y-3">
-            <input type="password" id="admin-password-input" placeholder="Şifreniz" onkeydown="if(event.key==='Enter') verifyAdminPassword()" class="w-full p-3 border border-neutral-300 rounded-xl text-center text-sm font-mono focus:outline-none focus:border-black">
-            <p id="admin-auth-error" class="text-xs text-red-600 font-semibold hidden">Hatalı şifre! Tekrar deneyin.</p>
-            
-            <button onclick="verifyAdminPassword()" class="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-neutral-800 transition-colors shadow-md">
-                Giriş Yap
-            </button>
-            <button onclick="closeAdminAuthModal()" class="w-full py-2 text-neutral-400 font-semibold text-xs uppercase hover:text-black">
-                İptal
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- YÖNETİCİ PANALİ -->
-<div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-    <div class="bg-white border border-black w-full max-w-4xl rounded-2xl modal-animate relative shadow-2xl p-6 font-poppins space-y-6 text-black my-8">
-        <div class="flex justify-between items-center border-b border-neutral-200 pb-3">
-            <h3 class="font-black text-lg uppercase flex items-center gap-2">
-                <i class="fa-solid fa-sliders text-black"></i> Byliss Parfüm — Yönetim Paneli
-            </h3>
-            <button onclick="closeAdminModal()" class="text-xl p-1 text-neutral-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- SOL KOLON -->
-            <div class="space-y-4">
-                <!-- YENİ ÜRÜN EKLE -->
-                <form onsubmit="handleAddProduct(event)" class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
-                    <div class="font-bold uppercase text-black border-b pb-2 flex items-center justify-between">
-                        <span><i class="fa-solid fa-plus-circle mr-1"></i> Yeni Parfüm Ekle</span>
-                    </div>
-                    <input type="text" id="admin-p-name" required placeholder="Parfüm Adı" class="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="admin-p-price" required placeholder="Fiyat (₺)" class="p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
-                        <select id="admin-p-cat" required class="p-2 border border-neutral-300 rounded focus:outline-none focus:border-black bg-white">
-                            <option value="fresh">Ferah & Çiçeksi</option>
-                            <option value="odunsu">Odunsu & Oryantal</option>
-                            <option value="niş">Niş Koleksiyon</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Görsel Seç (Cihazınızdan):</label>
-                        <input type="file" id="admin-p-file" accept="image/*" required class="w-full p-1 border border-neutral-300 rounded bg-white text-xs">
-                    </div>
-
-                    <input type="url" id="admin-p-shopier" required placeholder="Shopier Ürün Linki (https://...)" class="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
-                    <input type="text" id="admin-p-notes" required placeholder="Notalar (Örn: Bergamot, Amber, Misk)" class="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
-
-                    <button type="submit" id="btn-add-p" class="w-full py-2.5 bg-black text-white font-bold uppercase rounded hover:bg-neutral-800 transition-colors">
-                        Ürünü Kaydet
+                <nav class="flex flex-col space-y-4 font-poppins font-medium text-sm">
+                    <button onclick="switchTab('catalog'); closeSidebarDrawer();" class="text-left py-2 border-b border-neutral-100 hover:pl-2 transition-all flex items-center gap-3">
+                        <i class="fa-solid fa-spray-can text-neutral-400"></i> Tüm Parfümler
                     </button>
-                </form>
+                    <button onclick="switchTab('tester'); closeSidebarDrawer();" class="text-left py-2 border-b border-neutral-100 hover:pl-2 transition-all flex items-center gap-3">
+                        <i class="fa-solid fa-vial text-neutral-400"></i> 3'lü Tester Keşif Seti
+                    </button>
+                </nav>
+            </div>
+            <div class="text-[11px] text-neutral-400 font-mono">
+                BYLISS PARFUM v3.3<br>© 2026 Tüm Hakları Saklıdır.
+            </div>
+        </div>
+    </div>
 
-                <!-- TESTER SETİ AYARLARI -->
-                <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
-                    <div class="font-bold uppercase text-black border-b pb-2">
-                        <i class="fa-solid fa-vials mr-1"></i> 3'lü Tester Seti Ayarları
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Tester Paketi Fiyatı (₺):</label>
-                        <input type="number" id="admin-tester-price" class="w-full p-2 border border-neutral-300 rounded font-mono">
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">3'lü Tester Paketi Shopier Linki:</label>
-                        <input type="url" id="admin-tester-shopier" placeholder="https://www.shopier.com/ShowProductURL?id=..." class="w-full p-2 border border-neutral-300 rounded text-xs">
-                    </div>
-                    <button onclick="saveTesterSettings()" class="w-full py-2 bg-black text-white font-bold rounded uppercase">Tester Ayarlarını Kaydet</button>
+    <!-- ANA İÇERİK ALANI -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+
+        <!-- NAVİGASYON SEKMELERİ -->
+        <div class="flex items-center justify-center space-x-2 md:space-x-4 border-b border-neutral-200 pb-4 mb-6 font-poppins text-xs font-semibold uppercase tracking-wider overflow-x-auto">
+            <button id="tab-catalog-btn" onclick="switchTab('catalog')" class="px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm">
+                <i class="fa-solid fa-spray-can mr-1.5"></i> Koleksiyon
+            </button>
+            <button id="tab-tester-btn" onclick="switchTab('tester')" class="px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap">
+                <i class="fa-solid fa-vials mr-1.5"></i> 3'lü Tester Seti
+            </button>
+        </div>
+
+        <!-- 1. KATALOG VE BANNER BÖLÜMÜ -->
+        <div id="section-catalog" class="space-y-8">
+            
+            <!-- HERO SLIDER / BANNER -->
+            <div class="relative w-full h-56 sm:h-80 md:h-96 bg-neutral-900 rounded-2xl overflow-hidden shadow-lg group">
+                <div id="hero-slider-container" class="w-full h-full relative"></div>
+                <button onclick="prevHeroSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-20">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="nextHeroSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-20">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <div id="hero-indicators" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2 z-20"></div>
+            </div>
+
+            <!-- KATEGORİ VE ARAMA FİLTRESİ -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-neutral-50 p-4 rounded-xl border border-neutral-200">
+                <div class="flex items-center space-x-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 font-poppins text-xs font-medium">
+                    <button onclick="filterCategory('all')" class="cat-filter-btn px-3 py-1.5 bg-black text-white rounded-md whitespace-nowrap">Tümü</button>
+                    <button onclick="filterCategory('fresh')" class="cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap">Ferah & Çiçeksi</button>
+                    <button onclick="filterCategory('odunsu')" class="cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap">Odunsu & Oryantal</button>
+                    <button onclick="filterCategory('niş')" class="cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap">Niş Koleksiyon</button>
+                </div>
+
+                <div class="relative w-full sm:w-64">
+                    <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Parfüm adı veya nota ara..." class="w-full pl-9 pr-4 py-2 border border-neutral-300 text-xs focus:outline-none focus:border-black rounded-lg">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-xs"></i>
                 </div>
             </div>
 
-            <!-- SAĞ KOLON -->
-            <div class="space-y-4">
-                <!-- GENEL SİTE AYARLARI -->
-                <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
-                    <div class="font-bold uppercase text-black border-b pb-2">
-                        <i class="fa-solid fa-gear mr-1"></i> Kargo & Kayan Yazı
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Kargo Ücreti (₺):</label>
-                        <div class="flex gap-2">
-                            <input type="number" id="admin-shipping-fee" class="w-full p-2 border border-neutral-300 rounded font-mono">
-                            <button onclick="saveShippingFee()" class="px-4 py-2 bg-black text-white font-bold rounded">Kaydet</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Üst Kayan Yazı Metni:</label>
-                        <textarea id="admin-marquee-input" rows="2" class="w-full p-2 border border-neutral-300 rounded text-xs"></textarea>
-                        <button onclick="saveMarqueeText()" class="w-full mt-1 py-1.5 bg-black text-white font-bold rounded">Kayan Yazıyı Güncelle</button>
-                    </div>
+            <!-- ÜRÜN KARTLARI IZGARASI -->
+            <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"></div>
+        </div>
+
+        <!-- 2. TESTER SETİ BÖLÜMÜ -->
+        <div id="section-tester" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl text-center space-y-3">
+                <span class="text-xs font-mono tracking-widest text-neutral-400 uppercase">KEŞİF PAKETİ</span>
+                <h2 class="text-2xl sm:text-3xl font-black uppercase font-poppins">3'lü Tester Keşif Seti (3 x 5ml)</h2>
+                <p class="text-xs text-neutral-300 max-w-lg mx-auto">
+                    Büyük boy şişe almadan önce kokuları teninizde deneyimleyin! İstediğiniz 3 farklı BYLISS parfümünü seçin, özel numune kutunuzu hazırlayalım.
+                </p>
+            </div>
+
+            <div class="bg-white border border-neutral-200 p-6 rounded-2xl space-y-6 shadow-sm font-poppins text-xs">
+                <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
+                    <span class="font-bold uppercase text-sm">Seçilen Parfümler (<span id="tester-count">0</span>/3)</span>
+                    <button onclick="clearTesterSelection()" class="text-neutral-500 hover:text-black text-xs underline">Temizle</button>
                 </div>
 
-                <!-- BANNER YÖNETİMİ -->
-                <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
-                    <div class="font-bold uppercase text-black border-b pb-2 flex items-center justify-between">
-                        <span><i class="fa-solid fa-images mr-1"></i> Banner Yöneticisi</span>
+                <div id="selected-testers-list" class="flex flex-wrap gap-2 min-h-[40px] items-center p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+                    <span class="text-neutral-400 italic">Henüz parfüm seçilmedi. Aşağıdaki listeden 3 adet seçiniz.</span>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block font-bold uppercase text-neutral-700">Koleksiyondan 3 Parfüm Seçin:</label>
+                    <div id="tester-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1"></div>
+                </div>
+
+                <div class="pt-4 border-t border-neutral-200 flex items-center justify-between">
+                    <div>
+                        <div class="text-[10px] font-mono uppercase text-neutral-400">TESTER SETİ PAKET FİYATI:</div>
+                        <div id="tester-price-display" class="text-xl font-bold font-mono text-black">450 ₺</div>
                     </div>
-                    <form onsubmit="handleAddBanner(event)" class="space-y-2">
-                        <input type="text" id="admin-b-title" placeholder="Banner Başlığı (Opsiyonel)" class="w-full p-2 border border-neutral-300 rounded">
-                        <input type="text" id="admin-b-subtitle" placeholder="Banner Alt Açıklaması (Opsiyonel)" class="w-full p-2 border border-neutral-300 rounded">
-                        <div>
-                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Banner Görseli Seç (Zorunlu):</label>
-                            <input type="file" id="admin-b-file" accept="image/*" required class="w-full p-1 border border-neutral-300 rounded bg-white text-xs">
+                    <button id="add-tester-btn" onclick="triggerTesterWarning()" disabled class="px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed">
+                        <i class="fa-solid fa-box-open"></i> TESTER SETİNİ SEPETE EKLE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- TESTER UYARI MODALI -->
+    <div id="tester-warning-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white border border-black w-full max-w-md rounded-2xl modal-animate p-6 font-poppins text-center space-y-4 shadow-2xl">
+            <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-black text-lg uppercase tracking-wider text-black">DİKKAT / UYARI</h3>
+            <p class="text-xs text-neutral-700 font-medium leading-relaxed bg-neutral-50 p-4 rounded-xl border border-neutral-200">
+                Ödeme ekranına yönlendirilince seçtiğiniz koku isimlerini <strong>SATICI NOTU</strong> kısmında belirtiniz. Aksi taktirde siparişiniz iptal olunacaktır!
+            </p>
+            <div class="flex flex-col gap-2 pt-2">
+                <button onclick="confirmTesterAddToCart()" class="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-neutral-800 transition-colors shadow-md">
+                    ANLADIM, SEPETE EKLE
+                </button>
+                <button onclick="closeTesterWarning()" class="w-full py-2.5 text-neutral-500 font-semibold text-xs uppercase hover:text-black">
+                    Vazgeç
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAĞ SEPET DRAWER -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 bg-black/60 hidden backdrop-blur-sm transition-opacity" onclick="closeCart()">
+        <aside class="w-full max-w-md bg-white h-full ml-auto shadow-2xl flex flex-col justify-between" onclick="event.stopPropagation()">
+            <div class="p-4 border-b border-neutral-200 flex items-center justify-between bg-neutral-50 font-poppins">
+                <div class="flex items-center gap-2 font-bold text-sm uppercase">
+                    <i class="fa-solid fa-bag-shopping text-black"></i>
+                    <span>ALIŞVERİŞ SEPETİM</span>
+                    <span id="cart-drawer-count" class="text-xs bg-black text-white px-2 py-0.5 rounded-full font-mono">0</span>
+                </div>
+                <button onclick="closeCart()" class="text-xl p-1 text-neutral-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="cart-items-container" class="flex-grow overflow-y-auto p-4 space-y-4 font-poppins"></div>
+
+            <div class="p-4 border-t border-neutral-200 bg-neutral-50 space-y-3 font-poppins">
+                <div class="flex justify-between text-xs text-neutral-600">
+                    <span>Ara Toplam:</span>
+                    <span id="cart-subtotal">0 ₺</span>
+                </div>
+                <div class="flex justify-between text-xs text-neutral-600">
+                    <span>Kargo Ücreti:</span>
+                    <span id="cart-shipping">75 ₺</span>
+                </div>
+                <div class="flex justify-between text-sm font-bold text-black border-t border-neutral-200 pt-2">
+                    <span>GENEL TOPLAM:</span>
+                    <span id="cart-total">0 ₺</span>
+                </div>
+
+                <button onclick="redirectToShopierDirectly()" class="w-full py-3.5 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-lock text-xs"></i> SHOPIER İLE GÜVENLİ ÖDEME
+                </button>
+
+                <button onclick="checkoutWhatsApp()" class="w-full py-2.5 border border-emerald-600 text-emerald-700 font-bold text-[11px] uppercase tracking-wider rounded-lg hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WHATSAPP İLE İLETİŞİME GEÇ
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ALT BİLGİ (FOOTER) -->
+    <footer class="bg-black text-white py-12 px-4 border-t border-neutral-800 text-center font-poppins mt-16">
+        <div class="max-w-7xl mx-auto flex flex-col items-center justify-center space-y-6">
+            
+            <div class="flex flex-col items-center justify-center">
+                <svg width="220" height="70" viewBox="0 0 500 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-48 sm:w-56 h-auto">
+                    <path d="M 100 55 Q 250 30 400 55 Q 250 48 100 55 Z" fill="#FFFFFF" />
+                    <text x="250" y="125" text-anchor="middle" fill="#FFFFFF" font-family="'Poppins', sans-serif" font-weight="900" font-size="82" letter-spacing="4">BYLISS</text>
+                    <text x="250" y="168" text-anchor="middle" fill="#FFFFFF" font-family="'Inter', sans-serif" font-weight="300" font-size="34" letter-spacing="12">PARFUM</text>
+                </svg>
+            </div>
+
+            <p class="text-xs text-neutral-400 max-w-md leading-relaxed">
+                Yüksek esans oranına sahip, kalıcı ve eşsiz koku notalarıyla hazırlanan niş parfüm koleksiyonu.
+            </p>
+
+            <div class="flex space-x-6 text-lg text-neutral-400 pt-2">
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+
+            <div class="pt-6 border-t border-neutral-900 w-full text-[11px] text-neutral-500">
+                <span onclick="openAdminAuthModal()" class="cursor-pointer hover:text-white transition-colors select-none" title="Yönetici Paneli Girişi">
+                    © 2026 BYLISS PARFUM
+                </span>
+                — Tüm Hakları Saklıdır.
+            </div>
+        </div>
+    </footer>
+
+    <!-- YÖNETİCİ ŞİFRE GİRİŞ MODALI -->
+    <div id="admin-auth-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white border border-black w-full max-w-sm rounded-2xl modal-animate p-6 font-poppins text-center space-y-4 shadow-2xl">
+            <div class="w-12 h-12 bg-neutral-100 text-black rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="font-black text-base uppercase tracking-wider text-black">YÖNETİCİ GİRİŞİ</h3>
+            <p class="text-xs text-neutral-500">Yönetim paneline erişmek için şifrenizi giriniz.</p>
+            
+            <div class="space-y-3">
+                <input type="password" id="admin-password-input" placeholder="Şifreniz" onkeydown="if(event.key==='Enter') verifyAdminPassword()" class="w-full p-3 border border-neutral-300 rounded-xl text-center text-sm font-mono focus:outline-none focus:border-black">
+                <p id="admin-auth-error" class="text-xs text-red-600 font-semibold hidden">Hatalı şifre! Tekrar deneyin.</p>
+                
+                <button onclick="verifyAdminPassword()" class="w-full py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-neutral-800 transition-colors shadow-md">
+                    Giriş Yap
+                </button>
+                <button onclick="closeAdminAuthModal()" class="w-full py-2 text-neutral-400 font-semibold text-xs uppercase hover:text-black">
+                    İptal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GELİŞMİŞ YÖNETİCİ PANALİ -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white border border-black w-full max-w-4xl rounded-2xl modal-animate relative shadow-2xl p-6 font-poppins space-y-6 text-black my-8">
+            <div class="flex justify-between items-center border-b border-neutral-200 pb-3">
+                <h3 class="font-black text-lg uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-black"></i> Byliss Parfüm — Yönetim Paneli
+                </h3>
+                <button onclick="closeAdminModal()" class="text-xl p-1 text-neutral-500 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- SOL KOLON: ÜRÜN VE TESTER AYARLARI -->
+                <div class="space-y-4">
+                    <!-- YENİ ÜRÜN EKLE -->
+                    <form onsubmit="handleAddProduct(event)" class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
+                        <div class="font-bold uppercase text-black border-b pb-2 flex items-center justify-between">
+                            <span><i class="fa-solid fa-plus-circle mr-1"></i> Yeni Parfüm Ekle</span>
                         </div>
-                        <button type="submit" id="btn-add-b" class="w-full py-2 bg-neutral-800 text-white font-bold uppercase rounded hover:bg-black">
-                            Yeni Banner Ekle
+                        <input type="text" id="admin-p-name" required placeholder="Parfüm Adı" class="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="admin-p-price" required placeholder="Fiyat (₺)" class="p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
+                            <select id="admin-p-cat" required class="p-2 border border-neutral-300 rounded focus:outline-none focus:border-black bg-white">
+                                <option value="fresh">Ferah & Çiçeksi</option>
+                                <option value="odunsu">Odunsu & Oryantal</option>
+                                <option value="niş">Niş Koleksiyon</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Görsel Seç (Cihazınızdan):</label>
+                            <input type="file" id="admin-p-file" accept="image/*" required class="w-full p-1 border border-neutral-300 rounded bg-white text-xs">
+                        </div>
+
+                        <input type="url" id="admin-p-shopier" required placeholder="Shopier Ürün Linki (https://...)" class="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
+                        <input type="text" id="admin-p-notes" required placeholder="Notalar (Örn: Bergamot, Amber, Misk)" class="w-full p-2 border border-neutral-300 rounded focus:outline-none focus:border-black">
+
+                        <button type="submit" id="btn-add-p" class="w-full py-2.5 bg-black text-white font-bold uppercase rounded hover:bg-neutral-800 transition-colors">
+                            Ürünü Kaydet
                         </button>
                     </form>
-                    <div id="admin-banner-list" class="max-h-28 overflow-y-auto space-y-2 border-t border-neutral-200 pt-2"></div>
+
+                    <!-- TESTER SETİ AYARLARI -->
+                    <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
+                        <div class="font-bold uppercase text-black border-b pb-2">
+                            <i class="fa-solid fa-vials mr-1"></i> 3'lü Tester Seti Ayarları
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Tester Paketi Fiyatı (₺):</label>
+                            <input type="number" id="admin-tester-price" class="w-full p-2 border border-neutral-300 rounded font-mono">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">3'lü Tester Paketi Shopier Linki:</label>
+                            <input type="url" id="admin-tester-shopier" placeholder="https://www.shopier.com/ShowProductURL?id=..." class="w-full p-2 border border-neutral-300 rounded text-xs">
+                        </div>
+                        <button onclick="saveTesterSettings()" class="w-full py-2 bg-black text-white font-bold rounded uppercase">Tester Ayarlarını Kaydet</button>
+                    </div>
                 </div>
 
-                <!-- MEVCUT PARFÜMLER -->
-                <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
-                    <div class="font-bold uppercase text-neutral-700">Mevcut Parfümler</div>
-                    <div id="admin-product-list" class="max-h-36 overflow-y-auto space-y-2 pr-1"></div>
+                <!-- SAĞ KOLON: GENEL AYARLAR & MEVCUT ÜRÜNLER -->
+                <div class="space-y-4">
+                    <!-- GENEL SİTE AYARLARI -->
+                    <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
+                        <div class="font-bold uppercase text-black border-b pb-2">
+                            <i class="fa-solid fa-gear mr-1"></i> Üst Duyuru & Kargo
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Kargo Ücreti (₺):</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="admin-shipping-fee" class="w-full p-2 border border-neutral-300 rounded font-mono">
+                                <button onclick="saveShippingFee()" class="px-4 py-2 bg-black text-white font-bold rounded">Kaydet</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Üst Duyuru Metni:</label>
+                            <input type="text" id="admin-marquee-input" class="w-full p-2 border border-neutral-300 rounded text-xs">
+                            <button onclick="saveMarqueeText()" class="w-full mt-1 py-1.5 bg-black text-white font-bold rounded">Duyuruyu Güncelle</button>
+                        </div>
+                    </div>
+
+                    <!-- BANNER YÖNETİMİ -->
+                    <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
+                        <div class="font-bold uppercase text-black border-b pb-2 flex items-center justify-between">
+                            <span><i class="fa-solid fa-images mr-1"></i> Banner Yöneticisi</span>
+                        </div>
+                        <form onsubmit="handleAddBanner(event)" class="space-y-2">
+                            <input type="text" id="admin-b-title" placeholder="Banner Başlığı (Örn: LÜKS KOKULAR)" class="w-full p-2 border border-neutral-300 rounded">
+                            <input type="text" id="admin-b-subtitle" placeholder="Banner Alt Açıklaması" class="w-full p-2 border border-neutral-300 rounded">
+                            <div>
+                                <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Banner Görseli Seç (Zorunlu):</label>
+                                <input type="file" id="admin-b-file" accept="image/*" required class="w-full p-1 border border-neutral-300 rounded bg-white text-xs">
+                            </div>
+                            <button type="submit" id="btn-add-b" class="w-full py-2 bg-neutral-800 text-white font-bold uppercase rounded hover:bg-black">
+                                Yeni Banner Ekle
+                            </button>
+                        </form>
+                        <div id="admin-banner-list" class="max-h-28 overflow-y-auto space-y-2 border-t border-neutral-200 pt-2"></div>
+                    </div>
+
+                    <!-- MEVCUT PARFÜMLER -->
+                    <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
+                        <div class="font-bold uppercase text-neutral-700">Mevcut Parfümler</div>
+                        <div id="admin-product-list" class="max-h-36 overflow-y-auto space-y-2 pr-1"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- JAVASCRIPT MANTIĞI -->
-<script>
-    const ADMIN_PASS = "Yigit2005";
-    let testerPrice = 450;
-    let testerShopierUrl = "https://www.shopier.com/ShowProductURL?id=TESTER_3LU_SET";
-    let shippingFee = 75;
-    let marqueeText = "BYLISS PARFUM — LÜKS KOKU KOLEKSİYONU ★ SHOPIER İLE %100 GÜVENLİ KREDİ KARTIYLA ÖDEME ★ YÜKSEK ESANS ORANI VE KALICI NOTALAR ★ BYLISS PARFUM";
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const ADMIN_PASS = "Yigit2005";
+        let testerPrice = 450;
+        let testerShopierUrl = "https://www.shopier.com/ShowProductURL?id=TESTER_3LU_SET";
+        let shippingFee = 75;
+        let marqueeText = "BYLISS PARFUM — LÜKS KOKU KOLEKSİYONU | SHOPIER İLE GÜVENLİ ÖDEME";
 
-    let products = [];
-    let heroSlides = [];
-    let cart = [];
-    let selectedTesters = [];
-    let currentSlide = 0;
-    let currentCategory = 'all';
+        let products = [];
+        let heroSlides = [];
+        let cart = [];
+        let selectedTesters = [];
+        let currentSlide = 0;
+        let currentCategory = 'all';
 
-    // Firebase Başlatılmasını Bekleme
-    window.addEventListener('load', () => {
-        const checkFirebase = setInterval(() => {
-            if (window.db) {
-                clearInterval(checkFirebase);
-                initFirebaseListeners();
-            }
-        }, 100);
-    });
-
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-    }
-
-    function initFirebaseListeners() {
-        window.onSnapshot(window.collection(window.db, "products"), (snapshot) => {
-            products = [];
-            snapshot.forEach((docSnap) => {
-                products.push({ id: docSnap.id, ...docSnap.data() });
-            });
-            renderProducts();
-            renderTesterOptions();
-            renderAdminProductList();
-        });
-
-        window.onSnapshot(window.collection(window.db, "banners"), (snapshot) => {
-            heroSlides = [];
-            snapshot.forEach((docSnap) => {
-                heroSlides.push({ id: docSnap.id, ...docSnap.data() });
-            });
-            renderHeroSlides();
-            renderAdminBannerList();
-        });
-
-        window.onSnapshot(window.collection(window.db, "settings"), (snapshot) => {
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                if (docSnap.id === "config") {
-                    if (data.testerPrice) testerPrice = Number(data.testerPrice);
-                    if (data.testerShopierUrl) testerShopierUrl = data.testerShopierUrl;
-                    if (data.shippingFee !== undefined) shippingFee = Number(data.shippingFee);
-                    if (data.marqueeText) marqueeText = data.marqueeText;
-
-                    updateSettingsUI();
+        window.addEventListener('load', () => {
+            const checkFirebase = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkFirebase);
+                    initFirebaseListeners();
                 }
+            }, 100);
+        });
+
+        // Geliştirilmiş ve Optimize Edilmiş Resim Sıkıştırma (Firestore 1MB Sınırını Geçmez)
+        function compressAndConvertToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const MAX_HEIGHT = 600;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
             });
-        });
-    }
-
-    function updateSettingsUI() {
-        document.getElementById('marquee-text-container').innerHTML = `
-            <span>${marqueeText}</span>
-            <span>${marqueeText}</span>
-        `;
-        document.getElementById('tester-price-display').innerText = `${testerPrice} ₺`;
-        document.getElementById('admin-tester-price').value = testerPrice;
-        document.getElementById('admin-tester-shopier').value = testerShopierUrl;
-        document.getElementById('admin-shipping-fee').value = shippingFee;
-        document.getElementById('admin-marquee-input').value = marqueeText;
-        updateCartUI();
-    }
-
-    function renderProducts() {
-        const grid = document.getElementById('product-grid');
-        const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
-
-        const filtered = products.filter(p => {
-            const matchesCat = currentCategory === 'all' || p.category === currentCategory;
-            const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.notes.toLowerCase().includes(searchVal);
-            return matchesCat && matchesSearch;
-        });
-
-        if (filtered.length === 0) {
-            grid.innerHTML = `<div class="col-span-full text-center py-12 text-neutral-400 text-xs">Aradığınız kriterlere uygun parfüm bulunamadı.</div>`;
-            return;
         }
 
-        grid.innerHTML = filtered.map(p => `
-            <div class="product-card bg-white border border-neutral-200 rounded-xl p-3 flex flex-col justify-between hover:border-black transition-all shadow-sm">
-                <div class="space-y-2">
-                    <div class="relative w-full aspect-square bg-neutral-100 rounded-lg overflow-hidden">
-                        <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-full object-cover">
-                        <span class="absolute top-2 left-2 bg-black text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase">
-                            ${p.category}
-                        </span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-xs uppercase text-black line-clamp-1">${p.name}</h3>
-                        <p class="text-[10px] text-neutral-500 line-clamp-1 mt-0.5">${p.notes}</p>
-                    </div>
-                </div>
-                <div class="pt-3 mt-2 border-t border-neutral-100 flex flex-col gap-2">
-                    <div class="price-text font-bold font-mono text-sm text-black">${p.price} ₺</div>
-                    <button onclick="addToCart('${p.id}')" class="w-full py-2 bg-black text-white text-[10px] font-bold uppercase rounded hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-bag-shopping"></i> SEPETE EKLE
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
+        function initFirebaseListeners() {
+            window.onSnapshot(window.collection(window.db, "products"), (snapshot) => {
+                products = [];
+                snapshot.forEach((docSnap) => {
+                    products.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderProducts();
+                renderTesterOptions();
+                renderAdminProductList();
+            });
 
-    function renderHeroSlides() {
-        const container = document.getElementById('hero-slider-container');
-        const indicators = document.getElementById('hero-indicators');
+            window.onSnapshot(window.collection(window.db, "banners"), (snapshot) => {
+                heroSlides = [];
+                snapshot.forEach((docSnap) => {
+                    heroSlides.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderHeroSlides();
+                renderAdminBannerList();
+            });
 
-        if (heroSlides.length === 0) {
-            container.innerHTML = `
-                <div class="w-full h-full bg-neutral-900 flex flex-col items-center justify-center text-white p-4 text-center">
-                    <h2 class="text-xl sm:text-3xl font-black uppercase tracking-widest">BYLISS PARFUM</h2>
-                    <p class="text-xs text-neutral-400 mt-2">Lüks Ve Kalıcı Esans Koleksiyonu</p>
-                </div>
-            `;
-            indicators.innerHTML = '';
-            return;
+            window.onSnapshot(window.collection(window.db, "settings"), (snapshot) => {
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (docSnap.id === "config") {
+                        if (data.testerPrice) testerPrice = Number(data.testerPrice);
+                        if (data.testerShopierUrl) testerShopierUrl = data.testerShopierUrl;
+                        if (data.shippingFee !== undefined) shippingFee = Number(data.shippingFee);
+                        if (data.marqueeText) marqueeText = data.marqueeText;
+
+                        updateSettingsUI();
+                    }
+                });
+            });
         }
 
-        container.innerHTML = heroSlides.map((slide, idx) => `
-            <div class="absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
-                <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Banner">
-                <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-white text-center p-4">
-                    ${slide.title ? `<h2 class="text-xl sm:text-3xl font-black uppercase drop-shadow">${slide.title}</h2>` : ''}
-                    ${slide.subtitle ? `<p class="text-xs sm:text-sm text-neutral-200 mt-1 drop-shadow">${slide.subtitle}</p>` : ''}
-                </div>
-            </div>
-        `).join('');
+        function updateSettingsUI() {
+            document.getElementById('top-announcement').innerText = marqueeText;
+            document.getElementById('tester-price-display').innerText = `${testerPrice} ₺`;
+            document.getElementById('admin-tester-price').value = testerPrice;
+            document.getElementById('admin-tester-shopier').value = testerShopierUrl;
+            document.getElementById('admin-shipping-fee').value = shippingFee;
+            document.getElementById('admin-marquee-input').value = marqueeText;
+            updateCartUI();
+        }
 
-        indicators.innerHTML = heroSlides.map((_, idx) => `
-            <button onclick="goToHeroSlide(${idx})" class="w-2.5 h-2.5 rounded-full ${idx === currentSlide ? 'bg-white' : 'bg-white/40'}"></button>
-        `).join('');
-    }
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
 
-    function nextHeroSlide() {
-        if (heroSlides.length === 0) return;
-        currentSlide = (currentSlide + 1) % heroSlides.length;
-        renderHeroSlides();
-    }
+            const filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'all' || p.category === currentCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchVal) || (p.notes && p.notes.toLowerCase().includes(searchVal));
+                return matchesCat && matchesSearch;
+            });
 
-    function prevHeroSlide() {
-        if (heroSlides.length === 0) return;
-        currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length;
-        renderHeroSlides();
-    }
-
-    function goToHeroSlide(idx) {
-        currentSlide = idx;
-        renderHeroSlides();
-    }
-
-    function renderTesterOptions() {
-        const grid = document.getElementById('tester-options-grid');
-        grid.innerHTML = products.map(p => {
-            const isSelected = selectedTesters.includes(p.name);
-            return `
-                <button onclick="toggleTesterSelection('${p.name}')" class="p-2.5 rounded-lg border text-left flex items-center justify-between transition-all ${isSelected ? 'border-black bg-black text-white' : 'border-neutral-200 bg-white text-black hover:border-neutral-400'}">
-                    <span class="font-semibold text-xs truncate">${p.name}</span>
-                    <i class="fa-solid ${isSelected ? 'fa-circle-check text-white' : 'fa-circle-plus text-neutral-400'}"></i>
-                </button>
-            `;
-        }).join('');
-    }
-
-    function toggleTesterSelection(name) {
-        if (selectedTesters.includes(name)) {
-            selectedTesters = selectedTesters.filter(item => item !== name);
-        } else {
-            if (selectedTesters.length < 3) {
-                selectedTesters.push(name);
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-neutral-400 text-xs">Henüz parfüm eklenmedi veya aranan kriterde ürün bulunamadı.</div>`;
+                return;
             }
-        }
-        updateTesterUI();
-    }
 
-    function clearTesterSelection() {
-        selectedTesters = [];
-        updateTesterUI();
-    }
-
-    function updateTesterUI() {
-        document.getElementById('tester-count').innerText = selectedTesters.length;
-        const list = document.getElementById('selected-testers-list');
-        const addBtn = document.getElementById('add-tester-btn');
-
-        if (selectedTesters.length === 0) {
-            list.innerHTML = `<span class="text-neutral-400 italic">Henüz parfüm seçilmedi. Aşağıdaki listeden 3 adet seçiniz.</span>`;
-        } else {
-            list.innerHTML = selectedTesters.map(t => `
-                <span class="bg-black text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                    ${t}
-                    <i onclick="toggleTesterSelection('${t}')" class="fa-solid fa-xmark cursor-pointer hover:text-red-400"></i>
-                </span>
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card bg-white border border-neutral-200 rounded-xl p-3 flex flex-col justify-between hover:border-black transition-all shadow-sm">
+                    <div class="space-y-2">
+                        <div class="relative w-full aspect-square bg-neutral-100 rounded-lg overflow-hidden">
+                            <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 left-2 bg-black text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase">
+                                ${p.category}
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xs uppercase text-black line-clamp-1">${p.name}</h3>
+                            <p class="text-[10px] text-neutral-500 line-clamp-1 mt-0.5">${p.notes || ''}</p>
+                        </div>
+                    </div>
+                    <div class="pt-3 mt-2 border-t border-neutral-100 flex flex-col gap-2">
+                        <div class="price-text font-bold font-mono text-sm text-black">${p.price} ₺</div>
+                        <button onclick="addToCart('${p.id}')" class="w-full py-2 bg-black text-white text-[10px] font-bold uppercase rounded hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-bag-shopping"></i> SEPETE EKLE
+                        </button>
+                    </div>
+                </div>
             `).join('');
         }
 
-        if (selectedTesters.length === 3) {
-            addBtn.disabled = false;
-            addBtn.className = "px-6 py-3.5 bg-black text-white font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-pointer hover:bg-neutral-800 shadow-md";
-        } else {
-            addBtn.disabled = true;
-            addBtn.className = "px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed";
-        }
+        function renderHeroSlides() {
+            const container = document.getElementById('hero-slider-container');
+            const indicators = document.getElementById('hero-indicators');
 
-        renderTesterOptions();
-    }
-
-    function triggerTesterWarning() {
-        if (selectedTesters.length === 3) {
-            document.getElementById('tester-warning-modal').classList.remove('hidden');
-        }
-    }
-
-    function closeTesterWarning() {
-        document.getElementById('tester-warning-modal').classList.add('hidden');
-    }
-
-    function confirmTesterAddToCart() {
-        closeTesterWarning();
-        const item = {
-            id: 'tester-set-' + Date.now(),
-            name: `3'lü Tester Seti (${selectedTesters.join(', ')})`,
-            price: testerPrice,
-            shopierUrl: testerShopierUrl,
-            imageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=300&q=80',
-            isTester: true,
-            selectedTesters: [...selectedTesters]
-        };
-        cart.push(item);
-        updateCartUI();
-        openCart();
-        clearTesterSelection();
-    }
-
-    function addToCart(productId) {
-        const product = products.find(p => p.id === productId);
-        if (!product) return;
-        cart.push({ ...product });
-        updateCartUI();
-        openCart();
-    }
-
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        updateCartUI();
-    }
-
-    function updateCartUI() {
-        document.getElementById('cart-badge').innerText = cart.length;
-        document.getElementById('cart-drawer-count').innerText = cart.length;
-
-        const container = document.getElementById('cart-items-container');
-        if (cart.length === 0) {
-            container.innerHTML = `<div class="text-center py-12 text-neutral-400 text-xs">Sepetiniz henüz boş.</div>`;
-            document.getElementById('cart-subtotal').innerText = '0 ₺';
-            document.getElementById('cart-total').innerText = '0 ₺';
-            return;
-        }
-
-        let subtotal = 0;
-        container.innerHTML = cart.map((item, idx) => {
-            subtotal += Number(item.price);
-            return `
-                <div class="flex items-center justify-between gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
-                    <img src="${item.imageUrl}" class="w-12 h-12 object-cover rounded-lg">
-                    <div class="flex-grow">
-                        <h4 class="font-bold text-xs uppercase line-clamp-1">${item.name}</h4>
-                        <span class="font-mono text-xs font-semibold text-neutral-700">${item.price} ₺</span>
+            if (heroSlides.length === 0) {
+                container.innerHTML = `
+                    <div class="w-full h-full bg-gradient-to-r from-neutral-900 via-black to-neutral-900 flex flex-col items-center justify-center text-white p-4 text-center">
+                        <span class="text-[10px] font-mono tracking-[0.4em] uppercase text-neutral-400 mb-2">BYLISS PARFUM EXCLUSIVE</span>
+                        <h2 class="text-2xl sm:text-4xl font-black uppercase tracking-widest font-poppins">LÜKS KOKU KOLEKSİYONU</h2>
+                        <p class="text-xs text-neutral-300 mt-2 max-w-md font-light">Yüksek kalıcılık ve eşsiz esans notalarıyla tarzınızı tamamlayın.</p>
                     </div>
-                    <button onclick="removeFromCart(${idx})" class="text-neutral-400 hover:text-red-600 p-1">
-                        <i class="fa-solid fa-trash-can"></i>
+                `;
+                indicators.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = heroSlides.map((slide, idx) => `
+                <div class="absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
+                    <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Banner">
+                    <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white text-center p-4">
+                        ${slide.title ? `<h2 class="text-xl sm:text-3xl font-black uppercase drop-shadow-md font-poppins">${slide.title}</h2>` : ''}
+                        ${slide.subtitle ? `<p class="text-xs sm:text-sm text-neutral-200 mt-1 drop-shadow font-light">${slide.subtitle}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            indicators.innerHTML = heroSlides.map((_, idx) => `
+                <button onclick="goToHeroSlide(${idx})" class="w-2.5 h-2.5 rounded-full ${idx === currentSlide ? 'bg-white' : 'bg-white/40'}"></button>
+            `).join('');
+        }
+
+        function nextHeroSlide() {
+            if (heroSlides.length === 0) return;
+            currentSlide = (currentSlide + 1) % heroSlides.length;
+            renderHeroSlides();
+        }
+
+        function prevHeroSlide() {
+            if (heroSlides.length === 0) return;
+            currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length;
+            renderHeroSlides();
+        }
+
+        function goToHeroSlide(idx) {
+            currentSlide = idx;
+            renderHeroSlides();
+        }
+
+        function renderTesterOptions() {
+            const grid = document.getElementById('tester-options-grid');
+            grid.innerHTML = products.map(p => {
+                const isSelected = selectedTesters.includes(p.name);
+                return `
+                    <button onclick="toggleTesterSelection('${p.name}')" class="p-2.5 rounded-lg border text-left flex items-center justify-between transition-all ${isSelected ? 'border-black bg-black text-white' : 'border-neutral-200 bg-white text-black hover:border-neutral-400'}">
+                        <span class="font-semibold text-xs truncate">${p.name}</span>
+                        <i class="fa-solid ${isSelected ? 'fa-circle-check text-white' : 'fa-circle-plus text-neutral-400'}"></i>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function toggleTesterSelection(name) {
+            if (selectedTesters.includes(name)) {
+                selectedTesters = selectedTesters.filter(item => item !== name);
+            } else {
+                if (selectedTesters.length < 3) {
+                    selectedTesters.push(name);
+                }
+            }
+            updateTesterUI();
+        }
+
+        function clearTesterSelection() {
+            selectedTesters = [];
+            updateTesterUI();
+        }
+
+        function updateTesterUI() {
+            document.getElementById('tester-count').innerText = selectedTesters.length;
+            const list = document.getElementById('selected-testers-list');
+            const addBtn = document.getElementById('add-tester-btn');
+
+            if (selectedTesters.length === 0) {
+                list.innerHTML = `<span class="text-neutral-400 italic">Henüz parfüm seçilmedi. Aşağıdaki listeden 3 adet seçiniz.</span>`;
+            } else {
+                list.innerHTML = selectedTesters.map(t => `
+                    <span class="bg-black text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                        ${t}
+                        <i onclick="toggleTesterSelection('${t}')" class="fa-solid fa-xmark cursor-pointer hover:text-red-400"></i>
+                    </span>
+                `).join('');
+            }
+
+            if (selectedTesters.length === 3) {
+                addBtn.disabled = false;
+                addBtn.className = "px-6 py-3.5 bg-black text-white font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-pointer hover:bg-neutral-800 shadow-md";
+            } else {
+                addBtn.disabled = true;
+                addBtn.className = "px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed";
+            }
+
+            renderTesterOptions();
+        }
+
+        function triggerTesterWarning() {
+            if (selectedTesters.length === 3) {
+                document.getElementById('tester-warning-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeTesterWarning() {
+            document.getElementById('tester-warning-modal').classList.add('hidden');
+        }
+
+        function confirmTesterAddToCart() {
+            closeTesterWarning();
+            const item = {
+                id: 'tester-set-' + Date.now(),
+                name: `3'lü Tester Seti (${selectedTesters.join(', ')})`,
+                price: testerPrice,
+                shopierUrl: testerShopierUrl,
+                imageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=300&q=80',
+                isTester: true,
+                selectedTesters: [...selectedTesters]
+            };
+            cart.push(item);
+            updateCartUI();
+            openCart();
+            clearTesterSelection();
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            cart.push({ ...product });
+            updateCartUI();
+            openCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-badge').innerText = cart.length;
+            document.getElementById('cart-drawer-count').innerText = cart.length;
+
+            const container = document.getElementById('cart-items-container');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-neutral-400 text-xs">Sepetiniz henüz boş.</div>`;
+                document.getElementById('cart-subtotal').innerText = '0 ₺';
+                document.getElementById('cart-total').innerText = '0 ₺';
+                return;
+            }
+
+            let subtotal = 0;
+            container.innerHTML = cart.map((item, idx) => {
+                subtotal += Number(item.price);
+                return `
+                    <div class="flex items-center justify-between gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                        <img src="${item.imageUrl}" class="w-12 h-12 object-cover rounded-lg">
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-xs uppercase line-clamp-1">${item.name}</h4>
+                            <span class="font-mono text-xs font-semibold text-neutral-700">${item.price} ₺</span>
+                        </div>
+                        <button onclick="removeFromCart(${idx})" class="text-neutral-400 hover:text-red-600 p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            const total = subtotal + shippingFee;
+            document.getElementById('cart-subtotal').innerText = `${subtotal} ₺`;
+            document.getElementById('cart-shipping').innerText = `${shippingFee} ₺`;
+            document.getElementById('cart-total').innerText = `${total} ₺`;
+        }
+
+        function redirectToShopierDirectly() {
+            if (cart.length === 0) {
+                alert("Sepetiniz boş!");
+                return;
+            }
+            window.open(cart[0].shopierUrl || testerShopierUrl, '_blank');
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("Sepetiniz boş!");
+                return;
+            }
+            let msg = "Merhaba BYLISS PARFUM, sipariş vermek istiyorum:\n\n";
+            cart.forEach((item, idx) => {
+                msg += `${idx + 1}. ${item.name} - ${item.price} ₺\n`;
+            });
+            msg += `\nKargo: ${shippingFee} ₺`;
+            msg += `\nToplam: ${cart.reduce((a, b) => a + Number(b.price), 0) + shippingFee} ₺`;
+            
+            const encoded = encodeURIComponent(msg);
+            window.open(`https://wa.me/?text=${encoded}`, '_blank');
+        }
+
+        function switchTab(tab) {
+            const catSec = document.getElementById('section-catalog');
+            const testSec = document.getElementById('section-tester');
+            const catBtn = document.getElementById('tab-catalog-btn');
+            const testBtn = document.getElementById('tab-tester-btn');
+
+            if (tab === 'catalog') {
+                catSec.classList.remove('hidden');
+                testSec.classList.add('hidden');
+                catBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
+                testBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
+            } else {
+                catSec.classList.add('hidden');
+                testSec.classList.remove('hidden');
+                testBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
+                catBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
+            }
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                btn.className = "cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap";
+            });
+            event.target.className = "cat-filter-btn px-3 py-1.5 bg-black text-white rounded-md whitespace-nowrap";
+            renderProducts();
+        }
+
+        function handleSearch() {
+            renderProducts();
+        }
+
+        function openSidebarDrawer() { document.getElementById('sidebar-drawer').classList.remove('hidden'); }
+        function closeSidebarDrawer() { document.getElementById('sidebar-drawer').classList.add('hidden'); }
+        function openCart() { document.getElementById('cart-drawer').classList.remove('hidden'); }
+        function closeCart() { document.getElementById('cart-drawer').classList.add('hidden'); }
+
+        function openAdminAuthModal() { document.getElementById('admin-auth-modal').classList.remove('hidden'); }
+        function closeAdminAuthModal() { 
+            document.getElementById('admin-auth-modal').classList.add('hidden');
+            document.getElementById('admin-auth-error').classList.add('hidden');
+        }
+
+        function verifyAdminPassword() {
+            const input = document.getElementById('admin-password-input').value;
+            if (input === ADMIN_PASS) {
+                closeAdminAuthModal();
+                document.getElementById('admin-modal').classList.remove('hidden');
+                document.getElementById('admin-password-input').value = '';
+            } else {
+                document.getElementById('admin-auth-error').classList.remove('hidden');
+            }
+        }
+
+        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-add-p');
+            btn.disabled = true;
+            btn.innerText = "YÜKLENİYOR...";
+
+            try {
+                const name = document.getElementById('admin-p-name').value;
+                const price = Number(document.getElementById('admin-p-price').value);
+                const category = document.getElementById('admin-p-cat').value;
+                const file = document.getElementById('admin-p-file').files[0];
+                const shopierUrl = document.getElementById('admin-p-shopier').value;
+                const notes = document.getElementById('admin-p-notes').value;
+
+                const imageUrl = await compressAndConvertToBase64(file);
+
+                await window.addDoc(window.collection(window.db, "products"), {
+                    name, price, category, imageUrl, shopierUrl, notes, createdAt: Date.now()
+                });
+
+                e.target.reset();
+                alert("Ürün başarıyla eklendi!");
+            } catch (err) {
+                alert("Hata: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Ürünü Kaydet";
+            }
+        }
+
+        async function handleAddBanner(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-add-b');
+            btn.disabled = true;
+            btn.innerText = "YÜKLENİYOR...";
+
+            try {
+                const title = document.getElementById('admin-b-title').value;
+                const subtitle = document.getElementById('admin-b-subtitle').value;
+                const file = document.getElementById('admin-b-file').files[0];
+
+                const imageUrl = await compressAndConvertToBase64(file);
+
+                await window.addDoc(window.collection(window.db, "banners"), {
+                    title, subtitle, imageUrl, createdAt: Date.now()
+                });
+
+                e.target.reset();
+                alert("Banner görseli eklendi!");
+            } catch (err) {
+                alert("Hata: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Yeni Banner Ekle";
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+                await window.deleteDoc(window.doc(window.db, "products", id));
+            }
+        }
+
+        async function deleteBanner(id) {
+            if (confirm("Bu bannerı silmek istediğinize emin misiniz?")) {
+                await window.deleteDoc(window.doc(window.db, "banners", id));
+            }
+        }
+
+        function renderAdminProductList() {
+            const list = document.getElementById('admin-product-list');
+            list.innerHTML = products.map(p => `
+                <div class="flex items-center justify-between p-2 bg-white rounded border border-neutral-200 text-xs">
+                    <div class="flex items-center gap-2">
+                        <img src="${p.imageUrl}" class="w-8 h-8 object-cover rounded">
+                        <span class="font-bold truncate max-w-[150px]">${p.name}</span>
+                    </div>
+                    <button onclick="deleteProduct('${p.id}')" class="text-red-600 hover:text-red-800 p-1">
+                        <i class="fa-solid fa-trash"></i>
                     </button>
                 </div>
-            `;
-        }).join('');
-
-        const total = subtotal + shippingFee;
-        document.getElementById('cart-subtotal').innerText = `${subtotal} ₺`;
-        document.getElementById('cart-shipping').innerText = `${shippingFee} ₺`;
-        document.getElementById('cart-total').innerText = `${total} ₺`;
-    }
-
-    function redirectToShopierDirectly() {
-        if (cart.length === 0) {
-            alert("Sepetiniz boş!");
-            return;
+            `).join('');
         }
-        window.open(cart[0].shopierUrl || testerShopierUrl, '_blank');
-    }
 
-    function checkoutWhatsApp() {
-        if (cart.length === 0) {
-            alert("Sepetiniz boş!");
-            return;
-        }
-        let msg = "Merhaba BYLISS PARFUM, sipariş vermek istiyorum:\n\n";
-        cart.forEach((item, idx) => {
-            msg += `${idx + 1}. ${item.name} - ${item.price} ₺\n`;
-        });
-        msg += `\nKargo: ${shippingFee} ₺`;
-        msg += `\nToplam: ${cart.reduce((a, b) => a + Number(b.price), 0) + shippingFee} ₺`;
-        
-        const encoded = encodeURIComponent(msg);
-        window.open(`https://wa.me/?text=${encoded}`, '_blank');
-    }
-
-    function switchTab(tab) {
-        const catSec = document.getElementById('section-catalog');
-        const testSec = document.getElementById('section-tester');
-        const catBtn = document.getElementById('tab-catalog-btn');
-        const testBtn = document.getElementById('tab-tester-btn');
-
-        if (tab === 'catalog') {
-            catSec.classList.remove('hidden');
-            testSec.classList.add('hidden');
-            catBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
-            testBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
-        } else {
-            catSec.classList.add('hidden');
-            testSec.classList.remove('hidden');
-            testBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
-            catBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
-        }
-    }
-
-    function filterCategory(cat) {
-        currentCategory = cat;
-        document.querySelectorAll('.cat-filter-btn').forEach(btn => {
-            btn.className = "cat-filter-btn px-3 py-1.5 bg-white border border-neutral-300 hover:border-black rounded-md whitespace-nowrap";
-        });
-        event.target.className = "cat-filter-btn px-3 py-1.5 bg-black text-white rounded-md whitespace-nowrap";
-        renderProducts();
-    }
-
-    function handleSearch() {
-        renderProducts();
-    }
-
-    function openSidebarDrawer() { document.getElementById('sidebar-drawer').classList.remove('hidden'); }
-    function closeSidebarDrawer() { document.getElementById('sidebar-drawer').classList.add('hidden'); }
-    function openCart() { document.getElementById('cart-drawer').classList.remove('hidden'); }
-    function closeCart() { document.getElementById('cart-drawer').classList.add('hidden'); }
-
-    function openAdminAuthModal() { document.getElementById('admin-auth-modal').classList.remove('hidden'); }
-    function closeAdminAuthModal() { 
-        document.getElementById('admin-auth-modal').classList.add('hidden');
-        document.getElementById('admin-auth-error').classList.add('hidden');
-    }
-
-    function verifyAdminPassword() {
-        const input = document.getElementById('admin-password-input').value;
-        if (input === ADMIN_PASS) {
-            closeAdminAuthModal();
-            document.getElementById('admin-modal').classList.remove('hidden');
-            document.getElementById('admin-password-input').value = '';
-        } else {
-            document.getElementById('admin-auth-error').classList.remove('hidden');
-        }
-    }
-
-    function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
-
-    async function handleAddProduct(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btn-add-p');
-        btn.disabled = true;
-        btn.innerText = "YÜKLENİYOR...";
-
-        try {
-            const name = document.getElementById('admin-p-name').value;
-            const price = Number(document.getElementById('admin-p-price').value);
-            const category = document.getElementById('admin-p-cat').value;
-            const file = document.getElementById('admin-p-file').files[0];
-            const shopierUrl = document.getElementById('admin-p-shopier').value;
-            const notes = document.getElementById('admin-p-notes').value;
-
-            let imageUrl = "";
-
-            try {
-                const storageRef = window.ref(window.storage, 'products/' + Date.now() + '_' + file.name);
-                await window.uploadBytes(storageRef, file);
-                imageUrl = await window.getDownloadURL(storageRef);
-            } catch (stErr) {
-                console.warn("Storage engellendi, Base64 moduna geçiliyor...", stErr);
-                imageUrl = await fileToBase64(file);
-            }
-
-            await window.addDoc(window.collection(window.db, "products"), {
-                name, price, category, imageUrl, shopierUrl, notes, createdAt: Date.now()
-            });
-
-            e.target.reset();
-            alert("Ürün başarıyla eklendi!");
-        } catch (err) {
-            alert("Bir hata oluştu: " + err.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "Ürünü Kaydet";
-        }
-    }
-
-    async function handleAddBanner(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btn-add-b');
-        btn.disabled = true;
-        btn.innerText = "YÜKLENİYOR...";
-
-        try {
-            const title = document.getElementById('admin-b-title').value;
-            const subtitle = document.getElementById('admin-b-subtitle').value;
-            const file = document.getElementById('admin-b-file').files[0];
-
-            let imageUrl = "";
-
-            try {
-                const storageRef = window.ref(window.storage, 'banners/' + Date.now() + '_' + file.name);
-                await window.uploadBytes(storageRef, file);
-                imageUrl = await window.getDownloadURL(storageRef);
-            } catch (stErr) {
-                console.warn("Storage engellendi, Base64 moduna geçiliyor...", stErr);
-                imageUrl = await fileToBase64(file);
-            }
-
-            await window.addDoc(window.collection(window.db, "banners"), {
-                title, subtitle, imageUrl, createdAt: Date.now()
-            });
-
-            e.target.reset();
-            alert("Banner görseli başarıyla eklendi!");
-        } catch (err) {
-            alert("Bir hata oluştu: " + err.message);
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "Yeni Banner Ekle";
-        }
-    }
-
-    async function deleteProduct(id) {
-        if (confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
-            await window.deleteDoc(window.doc(window.db, "products", id));
-        }
-    }
-
-    async function deleteBanner(id) {
-        if (confirm("Bu bannerı silmek istediğinize emin misiniz?")) {
-            await window.deleteDoc(window.doc(window.db, "banners", id));
-        }
-    }
-
-    function renderAdminProductList() {
-        const list = document.getElementById('admin-product-list');
-        list.innerHTML = products.map(p => `
-            <div class="flex items-center justify-between p-2 bg-white rounded border border-neutral-200 text-xs">
-                <div class="flex items-center gap-2">
-                    <img src="${p.imageUrl}" class="w-8 h-8 object-cover rounded">
-                    <span class="font-bold truncate max-w-[150px]">${p.name}</span>
+        function renderAdminBannerList() {
+            const list = document.getElementById('admin-banner-list');
+            list.innerHTML = heroSlides.map(b => `
+                <div class="flex items-center justify-between p-2 bg-white rounded border border-neutral-200 text-xs">
+                    <div class="flex items-center gap-2">
+                        <img src="${b.imageUrl}" class="w-10 h-6 object-cover rounded">
+                        <span class="truncate max-w-[150px]">${b.title || 'Banner Görseli'}</span>
+                    </div>
+                    <button onclick="deleteBanner('${b.id}')" class="text-red-600 hover:text-red-800 p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
-                <button onclick="deleteProduct('${p.id}')" class="text-red-600 hover:text-red-800 p-1">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
-        `).join('');
-    }
+            `).join('');
+        }
 
-    function renderAdminBannerList() {
-        const list = document.getElementById('admin-banner-list');
-        list.innerHTML = heroSlides.map(b => `
-            <div class="flex items-center justify-between p-2 bg-white rounded border border-neutral-200 text-xs">
-                <div class="flex items-center gap-2">
-                    <img src="${b.imageUrl}" class="w-10 h-6 object-cover rounded">
-                    <span class="truncate max-w-[150px]">${b.title || 'Banner Görseli'}</span>
-                </div>
-                <button onclick="deleteBanner('${b.id}')" class="text-red-600 hover:text-red-800 p-1">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>
-        `).join('');
-    }
+        async function saveTesterSettings() {
+            const price = Number(document.getElementById('admin-tester-price').value);
+            const shopierUrl = document.getElementById('admin-tester-shopier').value;
 
-    async function saveTesterSettings() {
-        const price = Number(document.getElementById('admin-tester-price').value);
-        const shopierUrl = document.getElementById('admin-tester-shopier').value;
+            await window.setDoc(window.doc(window.db, "settings", "config"), {
+                testerPrice: price,
+                testerShopierUrl: shopierUrl
+            }, { merge: true });
 
-        await window.setDoc(window.doc(window.db, "settings", "config"), {
-            testerPrice: price,
-            testerShopierUrl: shopierUrl
-        }, { merge: true });
+            alert("Tester ayarları güncellendi!");
+        }
 
-        alert("Tester ayarları güncellendi!");
-    }
+        async function saveShippingFee() {
+            const fee = Number(document.getElementById('admin-shipping-fee').value);
+            await window.setDoc(window.doc(window.db, "settings", "config"), {
+                shippingFee: fee
+            }, { merge: true });
 
-    async function saveShippingFee() {
-        const fee = Number(document.getElementById('admin-shipping-fee').value);
-        await window.setDoc(window.doc(window.db, "settings", "config"), {
-            shippingFee: fee
-        }, { merge: true });
+            alert("Kargo ücreti güncellendi!");
+        }
 
-        alert("Kargo ücreti güncellendi!");
-    }
+        async function saveMarqueeText() {
+            const text = document.getElementById('admin-marquee-input').value;
+            await window.setDoc(window.doc(window.db, "settings", "config"), {
+                marqueeText: text
+            }, { merge: true });
 
-    async function saveMarqueeText() {
-        const text = document.getElementById('admin-marquee-input').value;
-        await window.setDoc(window.doc(window.db, "settings", "config"), {
-            marqueeText: text
-        }, { merge: true });
-
-        alert("Kayan yazı güncellendi!");
-    }
-</script>
+            alert("Duyuru metni güncellendi!");
+        }
+    </script>
+</body>
+</html>
