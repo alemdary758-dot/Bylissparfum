@@ -39,49 +39,25 @@
     </script>
     
     <style>
-        body {
-            font-family: 'Poppins', 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #000000;
-        }
-        .modal-animate {
-            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        body { font-family: 'Poppins', 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #000000; }
+        .modal-animate { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        
+        /* AKICI VE KESİNTİSİZ KAYAN YAZI ANİMASYONU */
+        .marquee-container { overflow: hidden; white-space: nowrap; width: 100%; background-color: #000000; color: #ffffff; font-family: 'Poppins', sans-serif; font-weight: 500; }
+        .marquee-content { display: inline-flex; animation: marquee 25s linear infinite; }
+        .marquee-container:hover .marquee-content { animation-play-state: paused; }
+        @keyframes marquee { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
 
         @media (max-width: 640px) {
-            #product-grid {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 0.75rem !important;
-            }
-            .product-card {
-                padding: 0.5rem !important;
-            }
-            .product-card h3 {
-                font-size: 0.75rem !important;
-                line-height: 1rem !important;
-            }
-            .product-card .price-text {
-                font-size: 0.875rem !important;
-            }
-            .product-card button {
-                padding-top: 0.5rem !important;
-                padding-bottom: 0.5rem !important;
-                font-size: 0.65rem !important;
-            }
+            #product-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.75rem !important; }
+            .product-card { padding: 0.5rem !important; }
+            .product-card h3 { font-size: 0.75rem !important; line-height: 1rem !important; }
+            .product-card .price-text { font-size: 0.875rem !important; }
+            .product-card button { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; font-size: 0.65rem !important; }
         }
     </style>
 
@@ -110,30 +86,31 @@
         window.doc = doc;
         window.onSnapshot = onSnapshot;
         window.setDoc = setDoc;
+        window.firebaseReady = true;
     </script>
 </head>
 <body class="bg-white text-black font-poppins antialiased min-h-screen flex flex-col justify-between select-none">
 
-    <!-- ÜST SABİT BİLDİRİM BARI -->
-    <div class="bg-black text-white py-2 border-b border-neutral-800 text-[11px] font-poppins tracking-widest uppercase text-center font-semibold">
-        <span id="top-announcement">BYLISS PARFUM — LÜKS KOKU KOLEKSİYONU | SHOPIER İLE GÜVENLİ ÖDEME</span>
+    <!-- ÜST BİLDİRİM BARI (ETKİN KAYAN YAZI) -->
+    <div class="marquee-container py-2 border-b border-neutral-800 text-[11px] font-poppins tracking-wider uppercase flex items-center h-8 z-40">
+        <div id="marquee-text-container" class="marquee-content flex items-center">
+            <!-- JavaScript burayı otomatik ve kesintisiz doldurur -->
+        </div>
     </div>
 
     <!-- ÜST BAR (NAVBAR) -->
-    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 py-3 flex items-center justify-between relative">
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 py-2.5 flex items-center justify-between relative">
         <div class="flex items-center space-x-3">
             <button id="open-sidebar" onclick="openSidebarDrawer()" class="text-black text-xl p-1 focus:outline-none hover:opacity-60 transition-opacity" aria-label="Menü">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
 
-        <!-- LOGO -->
         <a href="#" onclick="switchTab('catalog')" class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center group">
             <span class="text-xl md:text-2xl font-black tracking-[0.2em] uppercase text-black font-poppins leading-none">BYLISS</span>
             <span class="text-[9px] md:text-[10px] font-light text-neutral-500 tracking-[0.45em] uppercase leading-tight mt-0.5 pl-1">PARFUM</span>
         </a>
 
-        <!-- SEPET BUTONU -->
         <div class="flex items-center space-x-3">
             <button onclick="openCart()" class="relative text-black text-lg p-1 hover:opacity-60 transition-opacity" aria-label="Sepeti Aç">
                 <i class="fa-solid fa-bag-shopping"></i>
@@ -160,7 +137,7 @@
                 </nav>
             </div>
             <div class="text-[11px] text-neutral-400 font-mono">
-                BYLISS PARFUM v3.3<br>© 2026 Tüm Hakları Saklıdır.
+                BYLISS PARFUM v3.2<br>© 2026 Tüm Hakları Saklıdır.
             </div>
         </div>
     </div>
@@ -168,7 +145,6 @@
     <!-- ANA İÇERİK ALANI -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
 
-        <!-- NAVİGASYON SEKMELERİ -->
         <div class="flex items-center justify-center space-x-2 md:space-x-4 border-b border-neutral-200 pb-4 mb-6 font-poppins text-xs font-semibold uppercase tracking-wider overflow-x-auto">
             <button id="tab-catalog-btn" onclick="switchTab('catalog')" class="px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm">
                 <i class="fa-solid fa-spray-can mr-1.5"></i> Koleksiyon
@@ -178,10 +154,8 @@
             </button>
         </div>
 
-        <!-- 1. KATALOG VE BANNER BÖLÜMÜ -->
+        <!-- CATALOG SECTION -->
         <div id="section-catalog" class="space-y-8">
-            
-            <!-- HERO SLIDER / BANNER -->
             <div class="relative w-full h-56 sm:h-80 md:h-96 bg-neutral-900 rounded-2xl overflow-hidden shadow-lg group">
                 <div id="hero-slider-container" class="w-full h-full relative"></div>
                 <button onclick="prevHeroSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-20">
@@ -193,7 +167,6 @@
                 <div id="hero-indicators" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2 z-20"></div>
             </div>
 
-            <!-- KATEGORİ VE ARAMA FİLTRESİ -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-neutral-50 p-4 rounded-xl border border-neutral-200">
                 <div class="flex items-center space-x-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 font-poppins text-xs font-medium">
                     <button onclick="filterCategory('all')" class="cat-filter-btn px-3 py-1.5 bg-black text-white rounded-md whitespace-nowrap">Tümü</button>
@@ -208,11 +181,10 @@
                 </div>
             </div>
 
-            <!-- ÜRÜN KARTLARI IZGARASI -->
             <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"></div>
         </div>
 
-        <!-- 2. TESTER SETİ BÖLÜMÜ -->
+        <!-- TESTER SECTION -->
         <div id="section-tester" class="hidden max-w-3xl mx-auto space-y-6">
             <div class="bg-neutral-900 text-white p-6 sm:p-8 rounded-2xl text-center space-y-3">
                 <span class="text-xs font-mono tracking-widest text-neutral-400 uppercase">KEŞİF PAKETİ</span>
@@ -311,10 +283,9 @@
         </aside>
     </div>
 
-    <!-- ALT BİLGİ (FOOTER) -->
+    <!-- ALT BİLGİ (ORİJİNAL SIYAH FOOTER & GİZLİ GİRİŞ) -->
     <footer class="bg-black text-white py-12 px-4 border-t border-neutral-800 text-center font-poppins mt-16">
         <div class="max-w-7xl mx-auto flex flex-col items-center justify-center space-y-6">
-            
             <div class="flex flex-col items-center justify-center">
                 <svg width="220" height="70" viewBox="0 0 500 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-48 sm:w-56 h-auto">
                     <path d="M 100 55 Q 250 30 400 55 Q 250 48 100 55 Z" fill="#FFFFFF" />
@@ -322,17 +293,9 @@
                     <text x="250" y="168" text-anchor="middle" fill="#FFFFFF" font-family="'Inter', sans-serif" font-weight="300" font-size="34" letter-spacing="12">PARFUM</text>
                 </svg>
             </div>
-
             <p class="text-xs text-neutral-400 max-w-md leading-relaxed">
                 Yüksek esans oranına sahip, kalıcı ve eşsiz koku notalarıyla hazırlanan niş parfüm koleksiyonu.
             </p>
-
-            <div class="flex space-x-6 text-lg text-neutral-400 pt-2">
-                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="hover:text-white transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
-            </div>
-
             <div class="pt-6 border-t border-neutral-900 w-full text-[11px] text-neutral-500">
                 <span onclick="openAdminAuthModal()" class="cursor-pointer hover:text-white transition-colors select-none" title="Yönetici Paneli Girişi">
                     © 2026 BYLISS PARFUM
@@ -342,7 +305,7 @@
         </div>
     </footer>
 
-    <!-- YÖNETİCİ ŞİFRE GİRİŞ MODALI -->
+    <!-- YÖNETİCİ ŞİFRE GİRİŞ MODALI (Yigit2005) -->
     <div id="admin-auth-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white border border-black w-full max-w-sm rounded-2xl modal-animate p-6 font-poppins text-center space-y-4 shadow-2xl">
             <div class="w-12 h-12 bg-neutral-100 text-black rounded-full flex items-center justify-center mx-auto text-xl">
@@ -365,7 +328,7 @@
         </div>
     </div>
 
-    <!-- GELİŞMİŞ YÖNETİCİ PANALİ -->
+    <!-- YÖNETİCİ PANELİ -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
         <div class="bg-white border border-black w-full max-w-4xl rounded-2xl modal-animate relative shadow-2xl p-6 font-poppins space-y-6 text-black my-8">
             <div class="flex justify-between items-center border-b border-neutral-200 pb-3">
@@ -376,7 +339,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- SOL KOLON: ÜRÜN VE TESTER AYARLARI -->
+                <!-- SOL KOLON -->
                 <div class="space-y-4">
                     <!-- YENİ ÜRÜN EKLE -->
                     <form onsubmit="handleAddProduct(event)" class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
@@ -424,12 +387,12 @@
                     </div>
                 </div>
 
-                <!-- SAĞ KOLON: GENEL AYARLAR & MEVCUT ÜRÜNLER -->
+                <!-- SAĞ KOLON -->
                 <div class="space-y-4">
                     <!-- GENEL SİTE AYARLARI -->
                     <div class="bg-neutral-50 p-4 rounded-xl border border-neutral-200 space-y-3 text-xs">
                         <div class="font-bold uppercase text-black border-b pb-2">
-                            <i class="fa-solid fa-gear mr-1"></i> Üst Duyuru & Kargo
+                            <i class="fa-solid fa-gear mr-1"></i> Kargo & Kayan Yazı
                         </div>
                         <div>
                             <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Kargo Ücreti (₺):</label>
@@ -439,9 +402,9 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Üst Duyuru Metni:</label>
-                            <input type="text" id="admin-marquee-input" class="w-full p-2 border border-neutral-300 rounded text-xs">
-                            <button onclick="saveMarqueeText()" class="w-full mt-1 py-1.5 bg-black text-white font-bold rounded">Duyuruyu Güncelle</button>
+                            <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Üst Kayan Yazı Metni:</label>
+                            <textarea id="admin-marquee-input" rows="2" class="w-full p-2 border border-neutral-300 rounded text-xs"></textarea>
+                            <button onclick="saveMarqueeText()" class="w-full mt-1 py-1.5 bg-black text-white font-bold rounded">Kayan Yazıyı Güncelle</button>
                         </div>
                     </div>
 
@@ -451,8 +414,8 @@
                             <span><i class="fa-solid fa-images mr-1"></i> Banner Yöneticisi</span>
                         </div>
                         <form onsubmit="handleAddBanner(event)" class="space-y-2">
-                            <input type="text" id="admin-b-title" placeholder="Banner Başlığı (Örn: LÜKS KOKULAR)" class="w-full p-2 border border-neutral-300 rounded">
-                            <input type="text" id="admin-b-subtitle" placeholder="Banner Alt Açıklaması" class="w-full p-2 border border-neutral-300 rounded">
+                            <input type="text" id="admin-b-title" placeholder="Banner Başlığı (Opsiyonel)" class="w-full p-2 border border-neutral-300 rounded">
+                            <input type="text" id="admin-b-subtitle" placeholder="Banner Alt Açıklaması (Opsiyonel)" class="w-full p-2 border border-neutral-300 rounded">
                             <div>
                                 <label class="block font-bold mb-1 text-[10px] uppercase text-neutral-600">Banner Görseli Seç (Zorunlu):</label>
                                 <input type="file" id="admin-b-file" accept="image/*" required class="w-full p-1 border border-neutral-300 rounded bg-white text-xs">
@@ -478,9 +441,9 @@
     <script>
         const ADMIN_PASS = "Yigit2005";
         let testerPrice = 450;
-        let testerShopierUrl = "https://www.shopier.com/ShowProductURL?id=TESTER_3LU_SET";
+        let testerShopierUrl = "https://www.shopier.com";
         let shippingFee = 75;
-        let marqueeText = "BYLISS PARFUM — LÜKS KOKU KOLEKSİYONU | SHOPIER İLE GÜVENLİ ÖDEME";
+        let marqueeText = "BYLISS PARFUM — LÜKS KOKU KOLEKSİYONU ★ SHOPIER İLE %100 GÜVENLİ KREDİ KARTIYLA ÖDEME ★ YÜKSEK ESANS ORANI VE KALICI NOTALAR";
 
         let products = [];
         let heroSlides = [];
@@ -491,14 +454,14 @@
 
         window.addEventListener('load', () => {
             const checkFirebase = setInterval(() => {
-                if (window.db) {
+                if (window.firebaseReady) {
                     clearInterval(checkFirebase);
                     initFirebaseListeners();
                 }
             }, 100);
         });
 
-        // Geliştirilmiş ve Optimize Edilmiş Resim Sıkıştırma (Firestore 1MB Sınırını Geçmez)
+        // Görseli hızlı base64 verisine dönüştüren güvenli fonksiyon
         function compressAndConvertToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -514,15 +477,9 @@
                         let height = img.height;
 
                         if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
+                            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                         } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
+                            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                         }
                         canvas.width = width;
                         canvas.height = height;
@@ -564,7 +521,6 @@
                         if (data.testerShopierUrl) testerShopierUrl = data.testerShopierUrl;
                         if (data.shippingFee !== undefined) shippingFee = Number(data.shippingFee);
                         if (data.marqueeText) marqueeText = data.marqueeText;
-
                         updateSettingsUI();
                     }
                 });
@@ -572,7 +528,15 @@
         }
 
         function updateSettingsUI() {
-            document.getElementById('top-announcement').innerText = marqueeText;
+            // KAYAN YAZININ KESİNTİSİZ AKMASI İÇİN METNİ TEKRARLAYAN YAPI
+            const repeatedText = `
+                <span class="mx-6 inline-flex items-center gap-2"><i class="fa-solid fa-star text-[8px] opacity-70"></i>${marqueeText}</span>
+                <span class="mx-6 inline-flex items-center gap-2"><i class="fa-solid fa-star text-[8px] opacity-70"></i>${marqueeText}</span>
+                <span class="mx-6 inline-flex items-center gap-2"><i class="fa-solid fa-star text-[8px] opacity-70"></i>${marqueeText}</span>
+                <span class="mx-6 inline-flex items-center gap-2"><i class="fa-solid fa-star text-[8px] opacity-70"></i>${marqueeText}</span>
+            `;
+            document.getElementById('marquee-text-container').innerHTML = repeatedText;
+
             document.getElementById('tester-price-display').innerText = `${testerPrice} ₺`;
             document.getElementById('admin-tester-price').value = testerPrice;
             document.getElementById('admin-tester-shopier').value = testerShopierUrl;
@@ -587,12 +551,12 @@
 
             const filtered = products.filter(p => {
                 const matchesCat = currentCategory === 'all' || p.category === currentCategory;
-                const matchesSearch = p.name.toLowerCase().includes(searchVal) || (p.notes && p.notes.toLowerCase().includes(searchVal));
+                const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.notes.toLowerCase().includes(searchVal);
                 return matchesCat && matchesSearch;
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-neutral-400 text-xs">Henüz parfüm eklenmedi veya aranan kriterde ürün bulunamadı.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-neutral-400 text-xs">Aradığınız kriterlere uygun parfüm bulunamadı.</div>`;
                 return;
             }
 
@@ -607,7 +571,7 @@
                         </div>
                         <div>
                             <h3 class="font-bold text-xs uppercase text-black line-clamp-1">${p.name}</h3>
-                            <p class="text-[10px] text-neutral-500 line-clamp-1 mt-0.5">${p.notes || ''}</p>
+                            <p class="text-[10px] text-neutral-500 line-clamp-1 mt-0.5">${p.notes}</p>
                         </div>
                     </div>
                     <div class="pt-3 mt-2 border-t border-neutral-100 flex flex-col gap-2">
@@ -626,10 +590,9 @@
 
             if (heroSlides.length === 0) {
                 container.innerHTML = `
-                    <div class="w-full h-full bg-gradient-to-r from-neutral-900 via-black to-neutral-900 flex flex-col items-center justify-center text-white p-4 text-center">
-                        <span class="text-[10px] font-mono tracking-[0.4em] uppercase text-neutral-400 mb-2">BYLISS PARFUM EXCLUSIVE</span>
-                        <h2 class="text-2xl sm:text-4xl font-black uppercase tracking-widest font-poppins">LÜKS KOKU KOLEKSİYONU</h2>
-                        <p class="text-xs text-neutral-300 mt-2 max-w-md font-light">Yüksek kalıcılık ve eşsiz esans notalarıyla tarzınızı tamamlayın.</p>
+                    <div class="w-full h-full bg-neutral-900 flex flex-col items-center justify-center text-white p-4 text-center">
+                        <h2 class="text-xl sm:text-3xl font-black uppercase tracking-widest">BYLISS PARFUM</h2>
+                        <p class="text-xs text-neutral-400 mt-2">Lüks Ve Kalıcı Esans Koleksiyonu</p>
                     </div>
                 `;
                 indicators.innerHTML = '';
@@ -639,9 +602,9 @@
             container.innerHTML = heroSlides.map((slide, idx) => `
                 <div class="absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
                     <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Banner">
-                    <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white text-center p-4">
-                        ${slide.title ? `<h2 class="text-xl sm:text-3xl font-black uppercase drop-shadow-md font-poppins">${slide.title}</h2>` : ''}
-                        ${slide.subtitle ? `<p class="text-xs sm:text-sm text-neutral-200 mt-1 drop-shadow font-light">${slide.subtitle}</p>` : ''}
+                    <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-white text-center p-4">
+                        ${slide.title ? `<h2 class="text-xl sm:text-3xl font-black uppercase drop-shadow">${slide.title}</h2>` : ''}
+                        ${slide.subtitle ? `<p class="text-xs sm:text-sm text-neutral-200 mt-1 drop-shadow">${slide.subtitle}</p>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -651,22 +614,9 @@
             `).join('');
         }
 
-        function nextHeroSlide() {
-            if (heroSlides.length === 0) return;
-            currentSlide = (currentSlide + 1) % heroSlides.length;
-            renderHeroSlides();
-        }
-
-        function prevHeroSlide() {
-            if (heroSlides.length === 0) return;
-            currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length;
-            renderHeroSlides();
-        }
-
-        function goToHeroSlide(idx) {
-            currentSlide = idx;
-            renderHeroSlides();
-        }
+        function nextHeroSlide() { if(heroSlides.length) { currentSlide = (currentSlide + 1) % heroSlides.length; renderHeroSlides(); } }
+        function prevHeroSlide() { if(heroSlides.length) { currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length; renderHeroSlides(); } }
+        function goToHeroSlide(idx) { currentSlide = idx; renderHeroSlides(); }
 
         function renderTesterOptions() {
             const grid = document.getElementById('tester-options-grid');
@@ -685,17 +635,12 @@
             if (selectedTesters.includes(name)) {
                 selectedTesters = selectedTesters.filter(item => item !== name);
             } else {
-                if (selectedTesters.length < 3) {
-                    selectedTesters.push(name);
-                }
+                if (selectedTesters.length < 3) selectedTesters.push(name);
             }
             updateTesterUI();
         }
 
-        function clearTesterSelection() {
-            selectedTesters = [];
-            updateTesterUI();
-        }
+        function clearTesterSelection() { selectedTesters = []; updateTesterUI(); }
 
         function updateTesterUI() {
             document.getElementById('tester-count').innerText = selectedTesters.length;
@@ -720,19 +665,11 @@
                 addBtn.disabled = true;
                 addBtn.className = "px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed";
             }
-
             renderTesterOptions();
         }
 
-        function triggerTesterWarning() {
-            if (selectedTesters.length === 3) {
-                document.getElementById('tester-warning-modal').classList.remove('hidden');
-            }
-        }
-
-        function closeTesterWarning() {
-            document.getElementById('tester-warning-modal').classList.add('hidden');
-        }
+        function triggerTesterWarning() { if (selectedTesters.length === 3) document.getElementById('tester-warning-modal').classList.remove('hidden'); }
+        function closeTesterWarning() { document.getElementById('tester-warning-modal').classList.add('hidden'); }
 
         function confirmTesterAddToCart() {
             closeTesterWarning();
@@ -741,9 +678,7 @@
                 name: `3'lü Tester Seti (${selectedTesters.join(', ')})`,
                 price: testerPrice,
                 shopierUrl: testerShopierUrl,
-                imageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=300&q=80',
-                isTester: true,
-                selectedTesters: [...selectedTesters]
+                imageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=300&q=80'
             };
             cart.push(item);
             updateCartUI();
@@ -753,16 +688,10 @@
 
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
-            if (!product) return;
-            cart.push({ ...product });
-            updateCartUI();
-            openCart();
+            if (product) { cart.push({ ...product }); updateCartUI(); openCart(); }
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
+        function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
 
         function updateCartUI() {
             document.getElementById('cart-badge').innerText = cart.length;
@@ -800,27 +729,16 @@
         }
 
         function redirectToShopierDirectly() {
-            if (cart.length === 0) {
-                alert("Sepetiniz boş!");
-                return;
-            }
+            if (cart.length === 0) { alert("Sepetiniz boş!"); return; }
             window.open(cart[0].shopierUrl || testerShopierUrl, '_blank');
         }
 
         function checkoutWhatsApp() {
-            if (cart.length === 0) {
-                alert("Sepetiniz boş!");
-                return;
-            }
+            if (cart.length === 0) { alert("Sepetiniz boş!"); return; }
             let msg = "Merhaba BYLISS PARFUM, sipariş vermek istiyorum:\n\n";
-            cart.forEach((item, idx) => {
-                msg += `${idx + 1}. ${item.name} - ${item.price} ₺\n`;
-            });
-            msg += `\nKargo: ${shippingFee} ₺`;
-            msg += `\nToplam: ${cart.reduce((a, b) => a + Number(b.price), 0) + shippingFee} ₺`;
-            
-            const encoded = encodeURIComponent(msg);
-            window.open(`https://wa.me/?text=${encoded}`, '_blank');
+            cart.forEach((item, idx) => { msg += `${idx + 1}. ${item.name} - ${item.price} ₺\n`; });
+            msg += `\nKargo: ${shippingFee} ₺\nToplam: ${cart.reduce((a, b) => a + Number(b.price), 0) + shippingFee} ₺`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function switchTab(tab) {
@@ -830,13 +748,11 @@
             const testBtn = document.getElementById('tab-tester-btn');
 
             if (tab === 'catalog') {
-                catSec.classList.remove('hidden');
-                testSec.classList.add('hidden');
+                catSec.classList.remove('hidden'); testSec.classList.add('hidden');
                 catBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
                 testBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
             } else {
-                catSec.classList.add('hidden');
-                testSec.classList.remove('hidden');
+                catSec.classList.add('hidden'); testSec.classList.remove('hidden');
                 testBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
                 catBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
             }
@@ -851,24 +767,16 @@
             renderProducts();
         }
 
-        function handleSearch() {
-            renderProducts();
-        }
-
+        function handleSearch() { renderProducts(); }
         function openSidebarDrawer() { document.getElementById('sidebar-drawer').classList.remove('hidden'); }
         function closeSidebarDrawer() { document.getElementById('sidebar-drawer').classList.add('hidden'); }
         function openCart() { document.getElementById('cart-drawer').classList.remove('hidden'); }
         function closeCart() { document.getElementById('cart-drawer').classList.add('hidden'); }
-
         function openAdminAuthModal() { document.getElementById('admin-auth-modal').classList.remove('hidden'); }
-        function closeAdminAuthModal() { 
-            document.getElementById('admin-auth-modal').classList.add('hidden');
-            document.getElementById('admin-auth-error').classList.add('hidden');
-        }
+        function closeAdminAuthModal() { document.getElementById('admin-auth-modal').classList.add('hidden'); document.getElementById('admin-auth-error').classList.add('hidden'); }
 
         function verifyAdminPassword() {
-            const input = document.getElementById('admin-password-input').value;
-            if (input === ADMIN_PASS) {
+            if (document.getElementById('admin-password-input').value === ADMIN_PASS) {
                 closeAdminAuthModal();
                 document.getElementById('admin-modal').classList.remove('hidden');
                 document.getElementById('admin-password-input').value = '';
@@ -927,7 +835,7 @@
                 });
 
                 e.target.reset();
-                alert("Banner görseli eklendi!");
+                alert("Banner eklendi!");
             } catch (err) {
                 alert("Hata: " + err.message);
             } finally {
@@ -981,31 +889,20 @@
         async function saveTesterSettings() {
             const price = Number(document.getElementById('admin-tester-price').value);
             const shopierUrl = document.getElementById('admin-tester-shopier').value;
-
-            await window.setDoc(window.doc(window.db, "settings", "config"), {
-                testerPrice: price,
-                testerShopierUrl: shopierUrl
-            }, { merge: true });
-
-            alert("Tester ayarları güncellendi!");
+            await window.setDoc(window.doc(window.db, "settings", "config"), { testerPrice: price, testerShopierUrl: shopierUrl }, { merge: true });
+            alert("Tester ayarları kaydedildi!");
         }
 
         async function saveShippingFee() {
             const fee = Number(document.getElementById('admin-shipping-fee').value);
-            await window.setDoc(window.doc(window.db, "settings", "config"), {
-                shippingFee: fee
-            }, { merge: true });
-
-            alert("Kargo ücreti güncellendi!");
+            await window.setDoc(window.doc(window.db, "settings", "config"), { shippingFee: fee }, { merge: true });
+            alert("Kargo ücreti kaydedildi!");
         }
 
         async function saveMarqueeText() {
             const text = document.getElementById('admin-marquee-input').value;
-            await window.setDoc(window.doc(window.db, "settings", "config"), {
-                marqueeText: text
-            }, { merge: true });
-
-            alert("Duyuru metni güncellendi!");
+            await window.setDoc(window.doc(window.db, "settings", "config"), { marqueeText: text }, { merge: true });
+            alert("Kayan yazı güncellendi!");
         }
     </script>
 </body>
