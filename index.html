@@ -82,12 +82,37 @@
             0% { transform: translateX(0%); }
             100% { transform: translateX(-50%); }
         }
+
+        /* MOBİL CİHAZLAR İÇİN YAN YANA 2'Lİ GRID TASARIMI */
+        @media (max-width: 640px) {
+            #product-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.75rem !important;
+            }
+            .product-card {
+                padding: 0.5rem !important;
+            }
+            .product-card h3 {
+                font-size: 0.75rem !important;
+                line-height: 1rem !important;
+            }
+            .product-card .price-text {
+                font-size: 0.875rem !important;
+            }
+            .product-card button {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+                font-size: 0.65rem !important;
+            }
+        }
     </style>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Firestore & Storage Entegre Edildi) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, setDoc, doc as docRef } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDn0Crf3DKbzVvnHcq1kz0nYJbIEuow-bY",
@@ -101,15 +126,20 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        // Global Window Binding
+        // Global Window Bindings
         window.db = db;
+        window.storage = storage;
         window.collection = collection;
         window.addDoc = addDoc;
         window.deleteDoc = deleteDoc;
         window.doc = doc;
         window.onSnapshot = onSnapshot;
         window.setDoc = setDoc;
+        window.ref = ref;
+        window.uploadBytes = uploadBytes;
+        window.getDownloadURL = getDownloadURL;
     </script>
 </head>
 <body class="bg-white text-black font-poppins antialiased min-h-screen flex flex-col justify-between select-none">
@@ -212,8 +242,8 @@
                 </div>
             </div>
 
-            <!-- ÜRÜN KARTLARI IZGARASI -->
-            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- ÜRÜN KARTLARI IZGARASI (Mobilde 2'li düzenlendi) -->
+            <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Dinamik Parfüm Kartları -->
             </div>
         </div>
@@ -377,7 +407,7 @@
 
     <!-- GELİŞMİŞ YÖNETİCİ PANALİ -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-white border border-black w-full max-w-4xl rounded-2xl modal-animate relative shadow-2xl my-auto p-6 font-poppins space-y-6 text-black my-8">
+        <div class="bg-white border border-black w-full max-w-4xl rounded-2xl modal-animate relative shadow-2xl p-6 font-poppins space-y-6 text-black my-8">
             <div class="flex justify-between items-center border-b border-neutral-200 pb-3">
                 <h3 class="font-black text-lg uppercase flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-black"></i> Byliss Parfüm — Yönetim Paneli
@@ -484,7 +514,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- COMPLETE JAVASCRIPT LOGIC -->
     <script>
         // --- 1. GLOBAL STATE & DEFAULT VALUES ---
         const ADMIN_PASS = "Yigit2005";
@@ -503,7 +533,7 @@
         // Wait Firebase Init
         window.addEventListener('load', () => {
             const checkFirebase = setInterval(() => {
-                if (window.db) {
+                if (window.db && window.storage) {
                     clearInterval(checkFirebase);
                     initFirebaseListeners();
                 }
@@ -529,131 +559,301 @@
                 snapshot.forEach((docSnap) => {
                     heroSlides.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                if(heroSlides.length === 0) {
-                    heroSlides = [{
-                        id: 'default',
-                        title: "LÜKS KOKU KOLEKSİYONU",
-                        subtitle: "Karizmatik ve imza kokularımızı hemen keşfedin.",
-                        bg: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&q=80&w=1200"
-                    }];
-                }
-                renderHeroSlider();
+                renderHeroSlides();
                 renderAdminBannerList();
             });
 
             // Settings Listener
-            window.onSnapshot(window.doc(window.db, "settings", "general"), (docSnap) => {
-                if(docSnap.exists()) {
+            window.onSnapshot(window.collection(window.db, "settings"), (snapshot) => {
+                snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    if(data.marqueeText) marqueeText = data.marqueeText;
-                    if(data.shippingFee) shippingFee = Number(data.shippingFee);
-                    if(data.testerPrice) testerPrice = Number(data.testerPrice);
-                    if(data.testerShopierUrl) testerShopierUrl = data.testerShopierUrl;
-                }
-                renderMarquee();
-                updateCartTotals();
-                document.getElementById('tester-price-display').innerText = testerPrice + " ₺";
-                document.getElementById('admin-tester-price').value = testerPrice;
-                document.getElementById('admin-tester-shopier').value = testerShopierUrl;
-                document.getElementById('admin-shipping-fee').value = shippingFee;
-                document.getElementById('admin-marquee-input').value = marqueeText;
-            });
-        }
+                    if (docSnap.id === "config") {
+                        if (data.testerPrice) testerPrice = Number(data.testerPrice);
+                        if (data.testerShopierUrl) testerShopierUrl = data.testerShopierUrl;
+                        if (data.shippingFee !== undefined) shippingFee = Number(data.shippingFee);
+                        if (data.marqueeText) marqueeText = data.marqueeText;
 
-        // --- GÖRSELİ HIZLICA BASE64'E ÇEVİREN YARDIMCI FONKSİYON (STORAGE KİLİTLENMESİNİ ENGELLER) ---
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
+                        updateSettingsUI();
+                    }
+                });
             });
         }
 
         // --- 3. UI RENDERING FUNCTIONS ---
-        function renderMarquee() {
-            const container = document.getElementById('marquee-text-container');
-            const content = `<span class="mx-4">${marqueeText}</span>`.repeat(4);
-            container.innerHTML = content;
-        }
-
-        function renderHeroSlider() {
-            const container = document.getElementById('hero-slider-container');
-            const indicators = document.getElementById('hero-indicators');
-            container.innerHTML = '';
-            indicators.innerHTML = '';
-
-            heroSlides.forEach((slide, idx) => {
-                const slideEl = document.createElement('div');
-                slideEl.className = `absolute inset-0 transition-opacity duration-700 ${idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
-                slideEl.innerHTML = `
-                    <img src="${slide.bg}" class="w-full h-full object-cover brightness-50">
-                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-6 text-white space-y-2">
-                        ${slide.title ? `<h2 class="text-2xl sm:text-4xl font-black uppercase tracking-wider font-poppins">${slide.title}</h2>` : ''}
-                        ${slide.subtitle ? `<p class="text-xs sm:text-sm text-neutral-200 max-w-lg font-light">${slide.subtitle}</p>` : ''}
-                    </div>
-                `;
-                container.appendChild(slideEl);
-
-                const ind = document.createElement('button');
-                ind.onclick = () => goToSlide(idx);
-                ind.className = `w-2.5 h-2.5 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-6' : 'bg-white/50'}`;
-                indicators.appendChild(ind);
-            });
-        }
-
-        function nextHeroSlide() {
-            currentSlide = (currentSlide + 1) % heroSlides.length;
-            renderHeroSlider();
-        }
-        function prevHeroSlide() {
-            currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length;
-            renderHeroSlider();
-        }
-        function goToSlide(idx) {
-            currentSlide = idx;
-            renderHeroSlider();
+        function updateSettingsUI() {
+            document.getElementById('marquee-text-container').innerHTML = `
+                <span>${marqueeText}</span>
+                <span>${marqueeText}</span>
+            `;
+            document.getElementById('tester-price-display').innerText = `${testerPrice} ₺`;
+            document.getElementById('admin-tester-price').value = testerPrice;
+            document.getElementById('admin-tester-shopier').value = testerShopierUrl;
+            document.getElementById('admin-shipping-fee').value = shippingFee;
+            document.getElementById('admin-marquee-input').value = marqueeText;
+            updateCartUI();
         }
 
         function renderProducts() {
             const grid = document.getElementById('product-grid');
-            grid.innerHTML = '';
+            const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
 
             const filtered = products.filter(p => {
                 const matchesCat = currentCategory === 'all' || p.category === currentCategory;
-                const searchVal = document.getElementById('search-input').value.toLowerCase();
                 const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.notes.toLowerCase().includes(searchVal);
                 return matchesCat && matchesSearch;
             });
 
-            if(filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center text-neutral-400 py-12 text-xs">Aradığınız kritere uygun parfüm bulunamadı.</div>`;
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-neutral-400 text-xs">Aradığınız kriterlere uygun parfüm bulunamadı.</div>`;
                 return;
             }
 
-            filtered.forEach(p => {
-                const card = document.createElement('div');
-                card.className = "bg-white border border-neutral-200 rounded-2xl overflow-hidden hover:shadow-xl transition-all flex flex-col justify-between group";
-                card.innerHTML = `
-                    <div>
-                        <div class="relative w-full h-64 overflow-hidden bg-neutral-100">
-                            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <span class="absolute top-3 left-3 bg-black text-white text-[9px] font-mono px-2.5 py-1 rounded-full uppercase tracking-wider">${p.category}</span>
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card bg-white border border-neutral-200 rounded-xl p-3 flex flex-col justify-between hover:border-black transition-all shadow-sm">
+                    <div class="space-y-2">
+                        <div class="relative w-full aspect-square bg-neutral-100 rounded-lg overflow-hidden">
+                            <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 left-2 bg-black text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase">
+                                ${p.category}
+                            </span>
                         </div>
-                        <div class="p-5 space-y-2">
-                            <h3 class="font-bold text-sm uppercase text-black leading-snug">${p.name}</h3>
-                            <p class="text-[11px] text-neutral-500 italic line-clamp-2">${p.notes}</p>
-                            <div class="text-lg font-bold font-mono text-black pt-1">${p.price} ₺</div>
+                        <div>
+                            <h3 class="font-bold text-xs uppercase text-black line-clamp-1">${p.name}</h3>
+                            <p class="text-[10px] text-neutral-500 line-clamp-1 mt-0.5">${p.notes}</p>
                         </div>
                     </div>
-                    <div class="p-5 pt-0 flex gap-2">
-                        <button onclick="addToCart('${p.id}')" class="flex-grow py-3 bg-black text-white font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2">
+                    <div class="pt-3 mt-2 border-t border-neutral-100 flex flex-col gap-2">
+                        <div class="price-text font-bold font-mono text-sm text-black">${p.price} ₺</div>
+                        <button onclick="addToCart('${p.id}')" class="w-full py-2 bg-black text-white text-[10px] font-bold uppercase rounded hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1">
                             <i class="fa-solid fa-bag-shopping"></i> SEPETE EKLE
                         </button>
                     </div>
+                </div>
+            `).join('');
+        }
+
+        function renderHeroSlides() {
+            const container = document.getElementById('hero-slider-container');
+            const indicators = document.getElementById('hero-indicators');
+
+            if (heroSlides.length === 0) {
+                container.innerHTML = `
+                    <div class="w-full h-full bg-neutral-900 flex flex-col items-center justify-center text-white p-4 text-center">
+                        <h2 class="text-xl sm:text-3xl font-black uppercase tracking-widest">BYLISS PARFUM</h2>
+                        <p class="text-xs text-neutral-400 mt-2">Lüks Ve Kalıcı Esans Koleksiyonu</p>
+                    </div>
                 `;
-                grid.appendChild(card);
+                indicators.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = heroSlides.map((slide, idx) => `
+                <div class="absolute inset-0 transition-opacity duration-700 ease-in-out ${idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}">
+                    <img src="${slide.imageUrl}" class="w-full h-full object-cover" alt="Banner">
+                    <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-white text-center p-4">
+                        ${slide.title ? `<h2 class="text-xl sm:text-3xl font-black uppercase drop-shadow">${slide.title}</h2>` : ''}
+                        ${slide.subtitle ? `<p class="text-xs sm:text-sm text-neutral-200 mt-1 drop-shadow">${slide.subtitle}</p>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            indicators.innerHTML = heroSlides.map((_, idx) => `
+                <button onclick="goToHeroSlide(${idx})" class="w-2.5 h-2.5 rounded-full ${idx === currentSlide ? 'bg-white' : 'bg-white/40'}"></button>
+            `).join('');
+        }
+
+        function nextHeroSlide() {
+            if (heroSlides.length === 0) return;
+            currentSlide = (currentSlide + 1) % heroSlides.length;
+            renderHeroSlides();
+        }
+
+        function prevHeroSlide() {
+            if (heroSlides.length === 0) return;
+            currentSlide = (currentSlide - 1 + heroSlides.length) % heroSlides.length;
+            renderHeroSlides();
+        }
+
+        function goToHeroSlide(idx) {
+            currentSlide = idx;
+            renderHeroSlides();
+        }
+
+        // --- 4. TESTER LOGIC ---
+        function renderTesterOptions() {
+            const grid = document.getElementById('tester-options-grid');
+            grid.innerHTML = products.map(p => {
+                const isSelected = selectedTesters.includes(p.name);
+                return `
+                    <button onclick="toggleTesterSelection('${p.name}')" class="p-2.5 rounded-lg border text-left flex items-center justify-between transition-all ${isSelected ? 'border-black bg-black text-white' : 'border-neutral-200 bg-white text-black hover:border-neutral-400'}">
+                        <span class="font-semibold text-xs truncate">${p.name}</span>
+                        <i class="fa-solid ${isSelected ? 'fa-circle-check text-white' : 'fa-circle-plus text-neutral-400'}"></i>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function toggleTesterSelection(name) {
+            if (selectedTesters.includes(name)) {
+                selectedTesters = selectedTesters.filter(item => item !== name);
+            } else {
+                if (selectedTesters.length < 3) {
+                    selectedTesters.push(name);
+                }
+            }
+            updateTesterUI();
+        }
+
+        function clearTesterSelection() {
+            selectedTesters = [];
+            updateTesterUI();
+        }
+
+        function updateTesterUI() {
+            document.getElementById('tester-count').innerText = selectedTesters.length;
+            const list = document.getElementById('selected-testers-list');
+            const addBtn = document.getElementById('add-tester-btn');
+
+            if (selectedTesters.length === 0) {
+                list.innerHTML = `<span class="text-neutral-400 italic">Henüz parfüm seçilmedi. Aşağıdaki listeden 3 adet seçiniz.</span>`;
+            } else {
+                list.innerHTML = selectedTesters.map(t => `
+                    <span class="bg-black text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                        ${t}
+                        <i onclick="toggleTesterSelection('${t}')" class="fa-solid fa-xmark cursor-pointer hover:text-red-400"></i>
+                    </span>
+                `).join('');
+            }
+
+            if (selectedTesters.length === 3) {
+                addBtn.disabled = false;
+                addBtn.className = "px-6 py-3.5 bg-black text-white font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-pointer hover:bg-neutral-800 shadow-md";
+            } else {
+                addBtn.disabled = true;
+                addBtn.className = "px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed";
+            }
+
+            renderTesterOptions();
+        }
+
+        function triggerTesterWarning() {
+            if (selectedTesters.length === 3) {
+                document.getElementById('tester-warning-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeTesterWarning() {
+            document.getElementById('tester-warning-modal').classList.add('hidden');
+        }
+
+        function confirmTesterAddToCart() {
+            closeTesterWarning();
+            const item = {
+                id: 'tester-set-' + Date.now(),
+                name: `3'lü Tester Seti (${selectedTesters.join(', ')})`,
+                price: testerPrice,
+                shopierUrl: testerShopierUrl,
+                imageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=300&q=80',
+                isTester: true,
+                selectedTesters: [...selectedTesters]
+            };
+            cart.push(item);
+            updateCartUI();
+            openCart();
+            clearTesterSelection();
+        }
+
+        // --- 5. CART LOGIC ---
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            cart.push({ ...product });
+            updateCartUI();
+            openCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-badge').innerText = cart.length;
+            document.getElementById('cart-drawer-count').innerText = cart.length;
+
+            const container = document.getElementById('cart-items-container');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-neutral-400 text-xs">Sepetiniz henüz boş.</div>`;
+                document.getElementById('cart-subtotal').innerText = '0 ₺';
+                document.getElementById('cart-total').innerText = '0 ₺';
+                return;
+            }
+
+            let subtotal = 0;
+            container.innerHTML = cart.map((item, idx) => {
+                subtotal += Number(item.price);
+                return `
+                    <div class="flex items-center justify-between gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                        <img src="${item.imageUrl}" class="w-12 h-12 object-cover rounded-lg">
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-xs uppercase line-clamp-1">${item.name}</h4>
+                            <span class="font-mono text-xs font-semibold text-neutral-700">${item.price} ₺</span>
+                        </div>
+                        <button onclick="removeFromCart(${idx})" class="text-neutral-400 hover:text-red-600 p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            const total = subtotal + shippingFee;
+            document.getElementById('cart-subtotal').innerText = `${subtotal} ₺`;
+            document.getElementById('cart-shipping').innerText = `${shippingFee} ₺`;
+            document.getElementById('cart-total').innerText = `${total} ₺`;
+        }
+
+        function redirectToShopierDirectly() {
+            if (cart.length === 0) {
+                alert("Sepetiniz boş!");
+                return;
+            }
+            window.open(cart[0].shopierUrl || testerShopierUrl, '_blank');
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("Sepetiniz boş!");
+                return;
+            }
+            let msg = "Merhaba BYLISS PARFUM, sipariş vermek istiyorum:\n\n";
+            cart.forEach((item, idx) => {
+                msg += `${idx + 1}. ${item.name} - ${item.price} ₺\n`;
             });
+            msg += `\nKargo: ${shippingFee} ₺`;
+            msg += `\nToplam: ${cart.reduce((a, b) => a + Number(b.price), 0) + shippingFee} ₺`;
+            
+            const encoded = encodeURIComponent(msg);
+            window.open(`https://wa.me/?text=${encoded}`, '_blank');
+        }
+
+        // --- 6. NAVIGATION & MODALS ---
+        function switchTab(tab) {
+            const catSec = document.getElementById('section-catalog');
+            const testSec = document.getElementById('section-tester');
+            const catBtn = document.getElementById('tab-catalog-btn');
+            const testBtn = document.getElementById('tab-tester-btn');
+
+            if (tab === 'catalog') {
+                catSec.classList.remove('hidden');
+                testSec.classList.add('hidden');
+                catBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
+                testBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
+            } else {
+                catSec.classList.add('hidden');
+                testSec.classList.remove('hidden');
+                testBtn.className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
+                catBtn.className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
+            }
         }
 
         function filterCategory(cat) {
@@ -669,194 +869,24 @@
             renderProducts();
         }
 
-        // --- 4. TESTER SELECTION LOGIC ---
-        function renderTesterOptions() {
-            const grid = document.getElementById('tester-options-grid');
-            grid.innerHTML = '';
-            products.forEach(p => {
-                const isSelected = selectedTesters.some(item => item.id === p.id);
-                const btn = document.createElement('div');
-                btn.onclick = () => toggleTesterSelection(p);
-                btn.className = `p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${isSelected ? 'border-black bg-neutral-900 text-white font-bold' : 'border-neutral-200 bg-neutral-50 hover:border-neutral-400 text-black'}`;
-                btn.innerHTML = `
-                    <span class="truncate pr-2">${p.name}</span>
-                    <i class="fa-solid ${isSelected ? 'fa-circle-check text-white' : 'fa-circle-plus text-neutral-400'}"></i>
-                `;
-                grid.appendChild(btn);
-            });
-        }
-
-        function toggleTesterSelection(p) {
-            const idx = selectedTesters.findIndex(item => item.id === p.id);
-            if(idx > -1) {
-                selectedTesters.splice(idx, 1);
-            } else {
-                if(selectedTesters.length >= 3) {
-                    alert("En fazla 3 parfüm seçebilirsiniz.");
-                    return;
-                }
-                selectedTesters.push(p);
-            }
-            updateTesterUI();
-        }
-
-        function updateTesterUI() {
-            document.getElementById('tester-count').innerText = selectedTesters.length;
-            const container = document.getElementById('selected-testers-list');
-            const addBtn = document.getElementById('add-tester-btn');
-
-            if(selectedTesters.length === 0) {
-                container.innerHTML = `<span class="text-neutral-400 italic">Henüz parfüm seçilmedi. Aşağıdaki listeden 3 adet seçiniz.</span>`;
-                addBtn.disabled = true;
-                addBtn.className = "px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed";
-            } else {
-                container.innerHTML = selectedTesters.map(p => `
-                    <span class="bg-black text-white px-3 py-1 rounded-full text-[11px] font-medium flex items-center gap-1.5">
-                        ${p.name}
-                        <i onclick="event.stopPropagation(); toggleTesterSelection(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="fa-solid fa-xmark text-neutral-400 hover:text-white cursor-pointer"></i>
-                    </span>
-                `).join('');
-
-                if(selectedTesters.length === 3) {
-                    addBtn.disabled = false;
-                    addBtn.className = "px-6 py-3.5 bg-black text-white font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 hover:bg-neutral-800 shadow-md";
-                } else {
-                    addBtn.disabled = true;
-                    addBtn.className = "px-6 py-3.5 bg-neutral-300 text-neutral-500 font-bold uppercase text-xs tracking-wider rounded-lg transition-colors flex items-center gap-2 cursor-not-allowed";
-                }
-            }
-            renderTesterOptions();
-        }
-
-        function clearTesterSelection() {
-            selectedTesters = [];
-            updateTesterUI();
-        }
-
-        function triggerTesterWarning() {
-            if(selectedTesters.length !== 3) return;
-            document.getElementById('tester-warning-modal').classList.remove('hidden');
-        }
-        function closeTesterWarning() {
-            document.getElementById('tester-warning-modal').classList.add('hidden');
-        }
-
-        function confirmTesterAddToCart() {
-            closeTesterWarning();
-            const names = selectedTesters.map(p => p.name).join(', ');
-            const testerItem = {
-                id: 'tester_' + Date.now(),
-                name: `3'lü Tester Keşif Seti (${names})`,
-                price: testerPrice,
-                shopierUrl: testerShopierUrl,
-                isTester: true
-            };
-            cart.push(testerItem);
-            updateCartUI();
-            openCart();
-            clearTesterSelection();
-        }
-
-        // --- 5. CART LOGIC ---
-        function addToCart(pId) {
-            const p = products.find(item => item.id === pId);
-            if(p) {
-                cart.push({...p});
-                updateCartUI();
-                openCart();
-            }
-        }
-
-        function removeFromCart(idx) {
-            cart.splice(idx, 1);
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            document.getElementById('cart-badge').innerText = cart.length;
-            document.getElementById('cart-drawer-count').innerText = cart.length;
-
-            const container = document.getElementById('cart-items-container');
-            container.innerHTML = '';
-
-            if(cart.length === 0) {
-                container.innerHTML = `<div class="text-center text-neutral-400 py-12 text-xs">Sepetiniz boş.</div>`;
-            } else {
-                cart.forEach((item, idx) => {
-                    const el = document.createElement('div');
-                    el.className = "flex items-center justify-between bg-neutral-50 p-3 rounded-xl border border-neutral-200 text-xs";
-                    el.innerHTML = `
-                        <div class="pr-2 space-y-0.5">
-                            <div class="font-bold text-black uppercase">${item.name}</div>
-                            <div class="font-mono text-neutral-600">${item.price} ₺</div>
-                        </div>
-                        <button onclick="removeFromCart(${idx})" class="text-red-500 hover:text-red-700 p-2"><i class="fa-solid fa-trash"></i></button>
-                    `;
-                    container.appendChild(el);
-                });
-            }
-            updateCartTotals();
-        }
-
-        function updateCartTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-            const total = subtotal > 0 ? subtotal + shippingFee : 0;
-            document.getElementById('cart-subtotal').innerText = subtotal + " ₺";
-            document.getElementById('cart-shipping').innerText = (subtotal > 0 ? shippingFee : 0) + " ₺";
-            document.getElementById('cart-total').innerText = total + " ₺";
-        }
-
-        function redirectToShopierDirectly() {
-            if(cart.length === 0) {
-                alert("Sepetiniz boş!");
-                return;
-            }
-            window.open(cart[0].shopierUrl || testerShopierUrl, '_blank');
-        }
-
-        function checkoutWhatsApp() {
-            if(cart.length === 0) {
-                alert("Sepetiniz boş!");
-                return;
-            }
-            const itemsList = cart.map(i => `- ${i.name} (${i.price} TL)`).join('%0A');
-            const total = cart.reduce((sum, item) => sum + Number(item.price), 0) + shippingFee;
-            const text = `Merhaba BYLISS PARFUM, sipariş vermek istiyorum:%0A%0A${itemsList}%0A%0AGenel Toplam (Kargo Dahil): ${total} TL`;
-            window.open(`https://wa.me/?text=${text}`, '_blank');
-        }
-
-        // --- 6. NAVIGATION & MODALS ---
-        function switchTab(tab) {
-            if(tab === 'catalog') {
-                document.getElementById('section-catalog').classList.remove('hidden');
-                document.getElementById('section-tester').classList.add('hidden');
-                document.getElementById('tab-catalog-btn').className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
-                document.getElementById('tab-tester-btn').className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
-            } else {
-                document.getElementById('section-catalog').classList.add('hidden');
-                document.getElementById('section-tester').classList.remove('hidden');
-                document.getElementById('tab-tester-btn').className = "px-4 py-2 bg-black text-white rounded-full transition-all whitespace-nowrap shadow-sm";
-                document.getElementById('tab-catalog-btn').className = "px-4 py-2 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded-full transition-all whitespace-nowrap";
-            }
-        }
-
         function openSidebarDrawer() { document.getElementById('sidebar-drawer').classList.remove('hidden'); }
         function closeSidebarDrawer() { document.getElementById('sidebar-drawer').classList.add('hidden'); }
         function openCart() { document.getElementById('cart-drawer').classList.remove('hidden'); }
         function closeCart() { document.getElementById('cart-drawer').classList.add('hidden'); }
 
+        // --- 7. ADMIN FUNCTIONS & FIREBASE STORAGE ENTEGRASYONU ---
         function openAdminAuthModal() { document.getElementById('admin-auth-modal').classList.remove('hidden'); }
         function closeAdminAuthModal() { 
-            document.getElementById('admin-auth-modal').classList.add('hidden'); 
+            document.getElementById('admin-auth-modal').classList.add('hidden');
             document.getElementById('admin-auth-error').classList.add('hidden');
-            document.getElementById('admin-password-input').value = "";
         }
 
         function verifyAdminPassword() {
-            const val = document.getElementById('admin-password-input').value;
-            if(val === ADMIN_PASS) {
+            const input = document.getElementById('admin-password-input').value;
+            if (input === ADMIN_PASS) {
                 closeAdminAuthModal();
                 document.getElementById('admin-modal').classList.remove('hidden');
+                document.getElementById('admin-password-input').value = '';
             } else {
                 document.getElementById('admin-auth-error').classList.remove('hidden');
             }
@@ -864,135 +894,141 @@
 
         function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
 
-        // --- 7. ADMIN ACTIONS (HIZLI VE SIFIR HATA GÖRSEL İŞLEME) ---
         async function handleAddProduct(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-add-p');
-            btn.innerText = "Yükleniyor...";
             btn.disabled = true;
+            btn.innerText = "Yükleniyor...";
 
             try {
                 const name = document.getElementById('admin-p-name').value;
                 const price = Number(document.getElementById('admin-p-price').value);
                 const category = document.getElementById('admin-p-cat').value;
+                const file = document.getElementById('admin-p-file').files[0];
                 const shopierUrl = document.getElementById('admin-p-shopier').value;
                 const notes = document.getElementById('admin-p-notes').value;
-                const file = document.getElementById('admin-p-file').files[0];
 
-                let imageUrl = "";
-                if (file) {
-                    imageUrl = await fileToBase64(file);
-                }
+                // Storage'a Görsel Yükle
+                const storageRef = window.ref(window.storage, 'products/' + Date.now() + '_' + file.name);
+                await window.uploadBytes(storageRef, file);
+                const imageUrl = await window.getDownloadURL(storageRef);
 
+                // Firestore'a Ürün Kaydet
                 await window.addDoc(window.collection(window.db, "products"), {
-                    name, price, category, shopierUrl, notes, image: imageUrl, createdAt: Date.now()
+                    name, price, category, imageUrl, shopierUrl, notes, createdAt: Date.now()
                 });
 
                 e.target.reset();
-                alert("Parfüm başarıyla yüklendi!");
+                alert("Ürün başarıyla eklendi!");
             } catch (err) {
                 alert("Hata oluştu: " + err.message);
             } finally {
-                btn.innerText = "Ürünü Kaydet";
                 btn.disabled = false;
-            }
-        }
-
-        async function deleteProduct(id) {
-            if(confirm("Bu parfümü silmek istediğinizden emin misiniz?")) {
-                await window.deleteDoc(window.doc(window.db, "products", id));
+                btn.innerText = "Ürünü Kaydet";
             }
         }
 
         async function handleAddBanner(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-add-b');
-            btn.innerText = "Yükleniyor...";
             btn.disabled = true;
+            btn.innerText = "Yükleniyor...";
 
             try {
                 const title = document.getElementById('admin-b-title').value;
                 const subtitle = document.getElementById('admin-b-subtitle').value;
                 const file = document.getElementById('admin-b-file').files[0];
 
-                let bgUrl = "";
-                if (file) {
-                    bgUrl = await fileToBase64(file);
-                }
+                // Storage'a Banner Yükle
+                const storageRef = window.ref(window.storage, 'banners/' + Date.now() + '_' + file.name);
+                await window.uploadBytes(storageRef, file);
+                const imageUrl = await window.getDownloadURL(storageRef);
 
+                // Firestore'a Banner Kaydet
                 await window.addDoc(window.collection(window.db, "banners"), {
-                    title, subtitle, bg: bgUrl, createdAt: Date.now()
+                    title, subtitle, imageUrl, createdAt: Date.now()
                 });
 
                 e.target.reset();
-                alert("Banner başarıyla eklendi!");
+                alert("Banner görseli başarıyla eklendi!");
             } catch (err) {
                 alert("Hata oluştu: " + err.message);
             } finally {
-                btn.innerText = "Yeni Banner Ekle";
                 btn.disabled = false;
+                btn.innerText = "Yeni Banner Ekle";
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+                await window.deleteDoc(window.doc(window.db, "products", id));
             }
         }
 
         async function deleteBanner(id) {
-            if(confirm("Bu bannerı silmek istediğinizden emin misiniz?")) {
+            if (confirm("Bu bannerı silmek istediğinize emin misiniz?")) {
                 await window.deleteDoc(window.doc(window.db, "banners", id));
             }
         }
 
+        function renderAdminProductList() {
+            const list = document.getElementById('admin-product-list');
+            list.innerHTML = products.map(p => `
+                <div class="flex items-center justify-between p-2 bg-white rounded border border-neutral-200 text-xs">
+                    <div class="flex items-center gap-2">
+                        <img src="${p.imageUrl}" class="w-8 h-8 object-cover rounded">
+                        <span class="font-bold truncate max-w-[150px]">${p.name}</span>
+                    </div>
+                    <button onclick="deleteProduct('${p.id}')" class="text-red-600 hover:text-red-800 p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminBannerList() {
+            const list = document.getElementById('admin-banner-list');
+            list.innerHTML = heroSlides.map(b => `
+                <div class="flex items-center justify-between p-2 bg-white rounded border border-neutral-200 text-xs">
+                    <div class="flex items-center gap-2">
+                        <img src="${b.imageUrl}" class="w-10 h-6 object-cover rounded">
+                        <span class="truncate max-w-[150px]">${b.title || 'Banner Görseli'}</span>
+                    </div>
+                    <button onclick="deleteBanner('${b.id}')" class="text-red-600 hover:text-red-800 p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
         async function saveTesterSettings() {
-            const p = Number(document.getElementById('admin-tester-price').value);
-            const url = document.getElementById('admin-tester-shopier').value;
-            await window.setDoc(window.doc(window.db, "settings", "general"), {
-                testerPrice: p,
-                testerShopierUrl: url
+            const price = Number(document.getElementById('admin-tester-price').value);
+            const shopierUrl = document.getElementById('admin-tester-shopier').value;
+
+            await window.setDoc(window.doc(window.db, "settings", "config"), {
+                testerPrice: price,
+                testerShopierUrl: shopierUrl
             }, { merge: true });
+
             alert("Tester ayarları güncellendi!");
         }
 
         async function saveShippingFee() {
             const fee = Number(document.getElementById('admin-shipping-fee').value);
-            await window.setDoc(window.doc(window.db, "settings", "general"), {
+            await window.setDoc(window.doc(window.db, "settings", "config"), {
                 shippingFee: fee
             }, { merge: true });
+
             alert("Kargo ücreti güncellendi!");
         }
 
         async function saveMarqueeText() {
-            const txt = document.getElementById('admin-marquee-input').value;
-            await window.setDoc(window.doc(window.db, "settings", "general"), {
-                marqueeText: txt
+            const text = document.getElementById('admin-marquee-input').value;
+            await window.setDoc(window.doc(window.db, "settings", "config"), {
+                marqueeText: text
             }, { merge: true });
+
             alert("Kayan yazı güncellendi!");
-        }
-
-        function renderAdminProductList() {
-            const container = document.getElementById('admin-product-list');
-            container.innerHTML = '';
-            products.forEach(p => {
-                const row = document.createElement('div');
-                row.className = "flex justify-between items-center bg-white p-2 border border-neutral-200 rounded text-xs";
-                row.innerHTML = `
-                    <span class="truncate font-bold max-w-[180px]">${p.name} (${p.price} ₺)</span>
-                    <button onclick="deleteProduct('${p.id}')" class="text-red-600 font-semibold hover:underline">Sil</button>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function renderAdminBannerList() {
-            const container = document.getElementById('admin-banner-list');
-            container.innerHTML = '';
-            heroSlides.forEach(b => {
-                if(b.id === 'default') return;
-                const row = document.createElement('div');
-                row.className = "flex justify-between items-center bg-white p-2 border border-neutral-200 rounded text-xs";
-                row.innerHTML = `
-                    <span class="truncate font-bold max-w-[180px]">${b.title || 'Görsel Banner'}</span>
-                    <button onclick="deleteBanner('${b.id}')" class="text-red-600 font-semibold hover:underline">Sil</button>
-                `;
-                container.appendChild(row);
-            });
         }
     </script>
 </body>
